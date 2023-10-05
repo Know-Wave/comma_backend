@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -45,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Optional<TokenDto> tokenDtoOptional = tokenService.mapToTokenDto(request);
         if (tokenDtoOptional.isEmpty()) {
-            sendErrorResponse(response, "NotFound token");
+            sendErrorResponse(response, NOT_FOUND_TOKEN);
             return;
         }
 
@@ -54,19 +56,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String refreshToken = tokenDto.getRefreshToken();
 
         if (tokenService.isExpired(accessToken)) {
-            sendErrorResponse(response, "Expired access token");
+            sendErrorResponse(response, EXPIRED_ACCESS_TOKEN);
             return;
         }
 
         Optional<Token> findTokenOptional = tokenService.findToken(refreshToken);
         if (findTokenOptional.isEmpty()) {
-            sendErrorResponse(response, "NotExist token");
+            sendErrorResponse(response, NOT_FOUND_TOKEN);
             return;
         }
 
         final Token findToken = findTokenOptional.get();
         if (!tokenService.isSameUser(accessToken, findToken)) {
-            sendErrorResponse(response, "Tempered Token");
+            sendErrorResponse(response, TEMPERED_TOKEN);
         }
 
         UserDetails accountDetails = tokenService.toUserDetails(findToken.getToken());

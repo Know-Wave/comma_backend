@@ -66,7 +66,7 @@ public class AccountController {
 
     @PostMapping("/email/verify")
     public ResponseEntity<String> emailAuthentication(@Valid @RequestBody EmailVerifyRequest requestDto) {
-        boolean result = accountService.verifyEmail(requestDto.getEmail(), requestDto.getCode());
+        boolean result = accountService.verifyEmail(requestDto.getEmail(), Integer.parseInt(requestDto.getCode()));
         if (result) return ResponseEntity.ok("Completed verification");
         else return new ResponseEntity<>("Failed verification", HttpStatus.BAD_REQUEST);
     }

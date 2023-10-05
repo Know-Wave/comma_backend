@@ -16,7 +16,7 @@ import java.util.Optional;
 public class WebRequestExceptionAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> bindValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<String> jsonBindValidException(MethodArgumentNotValidException ex) {
         String message = Optional.ofNullable(ex.getFieldError())
                 .map(FieldError::getDefaultMessage)
                 .orElse("올바르지 않은 입력 값입니다");

@@ -33,11 +33,6 @@ public class TokenService {
 
     public static final String REFRESH_TOKEN_NAME = "refresh_token";
     public static final String ACCESS_TOKEN_NAME = "access_token";
-    public static final String REFRESH_TOKEN_NOT_FOUND_MESSAGE = "NotFound refresh token";
-    public static final String ACCESS_TOKEN_NOT_FOUND_MESSAGE = "NotFound access token";
-    public static final String REFRESH_TOKEN_EXPIRED_MESSAGE = "Expired refresh token. login is required";
-    public static final String REFRESH_TOKEN_INVALID_MESSAGE = "Invalid refresh token";
-    public static final String ACCESS_TOKEN_EXPIRED_MESSAGE = "Expired access token. re-issuance is required";
 
     private final TokenRepository tokenRepository;
 

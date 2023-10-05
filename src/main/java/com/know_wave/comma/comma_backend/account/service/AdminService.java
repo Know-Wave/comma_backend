@@ -3,6 +3,7 @@ package com.know_wave.comma.comma_backend.account.service;
 import com.know_wave.comma.comma_backend.account.entity.Account;
 import com.know_wave.comma.comma_backend.account.entity.auth.Role;
 import com.know_wave.comma.comma_backend.account.repository.AccountRepository;
+import com.know_wave.comma.comma_backend.util.ExceptionMessageSource;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,6 @@ public class AdminService {
     private Account findAccount(String accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("NotExist Account"));
+                        new EntityNotFoundException(ExceptionMessageSource.NOT_EXIST_ACCOUNT));
     }
 }

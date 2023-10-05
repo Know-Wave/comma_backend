@@ -9,15 +9,27 @@ import java.util.List;
 @Entity
 public class Arduino extends BaseTimeEntity {
 
+    protected Arduino() {
+    }
+
+    public Arduino(String name, int count, int originalCount, String description) {
+        this.name = name;
+        this.count = count;
+        this.originalCount = originalCount;
+        this.description = description;
+    }
+
     @Id @GeneratedValue
     @Column(name = "arduino_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Min(0)
-    private int count;
+    private int count = 0;
 
+    @Column(nullable = false)
     @Min(0)
     private int originalCount;
 
@@ -33,7 +45,34 @@ public class Arduino extends BaseTimeEntity {
     @OneToMany(mappedBy = "arduino", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> itemComments;
 
+    public void update(String name, int count, int originalCount, String description) {
+        this.name = name;
+        this.count = count;
+        this.originalCount = originalCount;
+        this.description = description;
+    }
+
 //    @OneToMany(mappedBy = "arduinoItem", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<ArduinoOrder> orders;
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public int getOriginalCount() {
+        return originalCount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

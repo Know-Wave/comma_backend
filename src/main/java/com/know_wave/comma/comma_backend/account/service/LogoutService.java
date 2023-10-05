@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.NOT_FOUND_TOKEN;
+
 @Service
 @Transactional
 public class LogoutService implements LogoutHandler {
@@ -28,10 +30,10 @@ public class LogoutService implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<TokenDto> tokenDtoOptional = tokenService.mapToTokenDto(request);
-        TokenDto tokenDto = tokenDtoOptional.orElseThrow(() -> new TokenNotFound("NotFound Token"));
+        TokenDto tokenDto = tokenDtoOptional.orElseThrow(() -> new TokenNotFound(NOT_FOUND_TOKEN));
 
         Optional<Token> tokenOptional = tokenService.findToken(tokenDto.getRefreshToken());
-        Token token = tokenOptional.orElseThrow(() -> new TokenNotFound("NotExist Token"));
+        Token token = tokenOptional.orElseThrow(() -> new TokenNotFound(NOT_FOUND_TOKEN));
 
         Account account = token.getAccount();
         tokenService.revokeAllTokens(account.toUserDetails());

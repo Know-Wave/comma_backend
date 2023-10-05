@@ -9,10 +9,10 @@ import com.know_wave.comma.comma_backend.account.entity.auth.Role;
 import com.know_wave.comma.comma_backend.account.entity.token.Token;
 import com.know_wave.comma.comma_backend.account.repository.AccountRepository;
 import com.know_wave.comma.comma_backend.account.repository.AccountVerifyRepository;
-import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
 import com.know_wave.comma.comma_backend.exception.EmailVerifiedException;
+import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
 import com.know_wave.comma.comma_backend.exception.TokenNotFound;
-import com.know_wave.comma.comma_backend.util.EmailSenderService;
+import com.know_wave.comma.comma_backend.util.EmailSender;
 import com.know_wave.comma.comma_backend.util.RandomUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.know_wave.comma.comma_backend.account.service.TokenService.*;
+import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
 
 @Service
 @Transactional
@@ -35,15 +35,15 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountVerifyRepository accountVerifyRepository;
-    private final EmailSenderService emailSenderService;
+    private final EmailSender emailSender;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public AccountService(AccountRepository accountRepository, AccountVerifyRepository accountVerifyRepository, EmailSenderService emailSenderService, AuthenticationManager authenticationManager, TokenService tokenService, PasswordEncoder passwordEncoder) {
+    public AccountService(AccountRepository accountRepository, AccountVerifyRepository accountVerifyRepository, EmailSender emailSender, AuthenticationManager authenticationManager, TokenService tokenService, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.accountVerifyRepository = accountVerifyRepository;
-        this.emailSenderService = emailSenderService;
+        this.emailSender = emailSender;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
@@ -57,11 +57,11 @@ public class AccountService {
         emailVerifyOptional.ifPresentOrElse(
                 accountEmailVerify -> {
                     if (!accountEmailVerify.isVerified()) {
-                        throw new EmailVerifiedException("Not verified email");
+                        throw new EmailVerifiedException(NOT_VERIFIED_EMAIL);
                     }
                 },
                 () -> {
-                    throw new NotFoundEmailException("Not verified email");
+                    throw new NotFoundEmailException(NOT_FOUND_EMAIL);
                 }
         );
 
@@ -76,7 +76,7 @@ public class AccountService {
 
     public Account getOne(String id) {
         Optional<Account> byId = accountRepository.findById(id);
-        return byId.orElseThrow(() -> new RuntimeException("NotExist Account"));
+        return byId.orElseThrow(() -> new RuntimeException(NOT_EXIST_ACCOUNT));
     }
 
     public void send(String email) {
@@ -87,15 +87,15 @@ public class AccountService {
         accountEmailVerifyOptional.ifPresentOrElse(accountEmailVerify ->
                 {
                     if (accountEmailVerify.isVerified()) {
-                        throw new EmailVerifiedException("Existing verified account");
+                        throw new EmailVerifiedException(ALREADY_VERIFIED_EMAIL);
                     }
 
                     accountEmailVerify.setCode(code);
-                    accountEmailVerify.sendCode(emailSenderService);
+                    accountEmailVerify.sendCode(emailSender);
                 },
                 () -> {
                     AccountEmailVerify account = new AccountEmailVerify(email, false, code);
-                    account.sendCode(emailSenderService);
+                    account.sendCode(emailSender);
                     accountVerifyRepository.save(account);
                 }
         );
@@ -107,7 +107,7 @@ public class AccountService {
         accountEmailVerifyOptional.ifPresentOrElse(accountEmailVerify ->
                 {
                     if (accountEmailVerify.isVerified()) {
-                        throw new EmailVerifiedException("Existing verified account");
+                        throw new EmailVerifiedException(NOT_VERIFIED_EMAIL);
                     }
 
                     if (accountEmailVerify.verifyCode(code)) {
@@ -115,7 +115,7 @@ public class AccountService {
                     }
                 },
                 ()-> {
-                    throw new NotFoundEmailException("NotExist Email");
+                    throw new NotFoundEmailException(NOT_FOUND_EMAIL);
                 }
         );
 
@@ -148,7 +148,7 @@ public class AccountService {
     public TokenDto refreshToken(String token) {
 
         Optional<Token> findOptionalToken = tokenService.findToken(token);
-        Token findToken = findOptionalToken.orElseThrow(() -> new TokenNotFound(REFRESH_TOKEN_NOT_FOUND_MESSAGE));
+        Token findToken = findOptionalToken.orElseThrow(() -> new TokenNotFound(NOT_FOUND_TOKEN));
 
         boolean validToken = tokenService.isValidToken(findToken);
 
@@ -165,13 +165,13 @@ public class AccountService {
             return new TokenDto(accessToken, refreshToken);
         }
 
-        throw new ExpiredJwtException(null, null, REFRESH_TOKEN_INVALID_MESSAGE);
+        throw new ExpiredJwtException(null, null, INVALID_REFRESH_TOKEN);
     }
 
     private Account findAccount(String accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("NotExist Account"));
+                        new EntityNotFoundException(NOT_EXIST_ACCOUNT));
     }
 
     public AccountResponse getAccount() {
