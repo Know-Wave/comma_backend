@@ -9,10 +9,16 @@ public class ExceptionMessageSource {
     public static final String NOT_FOUND_TOKEN = "Not Found token";
     public static final String TEMPERED_TOKEN = "Tempered token";
     public static final String NOT_FOUND_ACCESS_TOKEN = "Not found access token";
-    public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
+    public static final String INVALID_TOKEN = "Invalid token";
     public static final String EXPIRED_REFRESH_TOKEN = "Expired refresh token. login is required";
     public static final String EXPIRED_ACCESS_TOKEN = "Expired access token. re-issuance is required";
     public static final String NOT_FOUND_ARDUINO = "Not found Arduino";
     public static final String ALREADY_EXIST_ARDUINO = "Already exist Arduino";
     public static final String PERMISSION_DENIED = "Permission denied";
+    public static final String NOT_FOUND_VALUE = "Not found value";
+    public static final String NOT_EXIST_VALUE = "Not found value";
+    public static final String ALREADY_IN_BASKET = "Already in basket";
+    public static final String NOT_ACCEPTABLE_REQUEST = "Not acceptable request";
+
+    public static final String INVALID_VALUE = "Invalid value";
 }

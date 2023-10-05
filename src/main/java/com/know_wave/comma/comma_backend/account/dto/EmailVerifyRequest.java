@@ -9,12 +9,12 @@ import static com.know_wave.comma.comma_backend.util.StringStorage.emailRegex;
 
 public class EmailVerifyRequest {
 
-    @NotEmpty(message = "{NotEmpty.email}")
+    @NotEmpty(message = "{Required}")
     @Email(regexp = emailRegex,
             message = "{Email.email}")
     private String email;
 
-    @NotEmpty(message = "{NotEmpty.code}")
+    @NotEmpty(message = "{Required}")
     @Range(min = 111111, max = 999999, message = "{Range.code}")
     private String code;
 

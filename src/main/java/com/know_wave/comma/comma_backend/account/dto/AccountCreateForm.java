@@ -28,31 +28,31 @@ public class AccountCreateForm {
         this.status = status;
     }
 
-    @NotEmpty(message = "{NotEmpty.accountId}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 4, max = 255, message = "{Length}")
     private String accountId;
 
-    @NotEmpty(message = "{NotEmpty.password}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 8, max = 255, message = "{Length}")
     private String password;
 
-    @NotEmpty(message = "{NotEmpty.name}")
-    @Length(min = 2, max = 8, message = "{Length}")
+    @NotEmpty(message = "{Required}")
+    @Length(min = 2, max = 8, message = "{Length.minMax}")
     private String name;
 
-    @NotEmpty(message = "{NotEmpty.email}")
+    @NotEmpty(message = "{Required}")
     @Email(regexp = emailRegex,
             message = "{Email.email}")
     private String email;
 
-    @NotEmpty(message = "{NotEmpty.academicNumber}")
+    @NotEmpty(message = "{Required}")
     @Range(min = 20000000, max = 20300000, message = "{Range.academicNumber}")
     private String academicNumber;
 
-    @NotEmpty(message = "{NotEmpty.major}")
+    @NotNull(message = "{Required}")
     private AcademicMajor major;
 
-    @NotEmpty(message = "{NotEmpty.status}}")
+    @NotNull(message = "{Required}")
     private AcademicStatus status;
 
     public String getAccountId() {

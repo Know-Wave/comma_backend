@@ -11,6 +11,7 @@ import com.know_wave.comma.comma_backend.util.annotation.PermissionProtection;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.ALRE
 import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.NOT_FOUND_ARDUINO;
 
 @Service
+@Transactional
 @PermissionProtection
 public class ArduinoAdminService {
 

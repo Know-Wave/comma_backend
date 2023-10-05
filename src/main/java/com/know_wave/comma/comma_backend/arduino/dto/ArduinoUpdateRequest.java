@@ -9,18 +9,18 @@ public class ArduinoUpdateRequest {
 
     private Long id;
 
-    @NotEmpty(message = "{NotEmpty.name}")
+    @NotEmpty(message = "{Required}")
     private String name;
 
-    @NotNull(message = "{NotNull.count}}")
+    @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
     private int count;
 
-    @NotNull(message = "{NotNull.originalCount}")
+    @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
     private int originalCount;
 
-    @NotNull(message = "{NotNull.description}")
+    @NotEmpty(message = "{Required}")
     private String description;
 
     public Long getId() {

@@ -13,7 +13,7 @@ import com.know_wave.comma.comma_backend.exception.EmailVerifiedException;
 import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
 import com.know_wave.comma.comma_backend.exception.TokenNotFound;
 import com.know_wave.comma.comma_backend.util.EmailSender;
-import com.know_wave.comma.comma_backend.util.RandomUtils;
+import com.know_wave.comma.comma_backend.util.GenerateCodeUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,18 +52,15 @@ public class AccountService {
     public void join(AccountCreateForm form) {
         String email = form.getEmail();
 
-        Optional<AccountEmailVerify> emailVerifyOptional = accountVerifyRepository.findById(email);
-
-        emailVerifyOptional.ifPresentOrElse(
+        accountVerifyRepository.findById(email).ifPresentOrElse(
                 accountEmailVerify -> {
                     if (!accountEmailVerify.isVerified()) {
                         throw new EmailVerifiedException(NOT_VERIFIED_EMAIL);
                     }
                 },
                 () -> {
-                    throw new NotFoundEmailException(NOT_FOUND_EMAIL);
-                }
-        );
+                    throw new NotFoundEmailException(NOT_VERIFIED_EMAIL);
+                });
 
         Account account = new Account(form.getAccountId(), email, form.getName(), passwordEncoder.encode(form.getPassword()), form.getAcademicNumber(), form.getMajor(), form.getStatus());
         accountRepository.save(account);
@@ -75,16 +72,14 @@ public class AccountService {
     }
 
     public Account getOne(String id) {
-        Optional<Account> byId = accountRepository.findById(id);
-        return byId.orElseThrow(() -> new RuntimeException(NOT_EXIST_ACCOUNT));
+        return accountRepository.findById(id).orElseThrow(() -> new RuntimeException(NOT_EXIST_ACCOUNT));
     }
 
     public void send(String email) {
 
-        final int code = RandomUtils.generateRandomCode();
-        Optional<AccountEmailVerify> accountEmailVerifyOptional = accountVerifyRepository.findById(email);
+        final int code = GenerateCodeUtils.getSixRandomCode();
 
-        accountEmailVerifyOptional.ifPresentOrElse(accountEmailVerify ->
+        accountVerifyRepository.findById(email).ifPresentOrElse(accountEmailVerify ->
                 {
                     if (accountEmailVerify.isVerified()) {
                         throw new EmailVerifiedException(ALREADY_VERIFIED_EMAIL);
@@ -97,29 +92,29 @@ public class AccountService {
                     AccountEmailVerify account = new AccountEmailVerify(email, false, code);
                     account.sendCode(emailSender);
                     accountVerifyRepository.save(account);
-                }
-        );
+                });
     }
 
     public boolean verifyEmail(String email, int code) {
-        Optional<AccountEmailVerify> accountEmailVerifyOptional = accountVerifyRepository.findById(email);
+        // 배열 자체에 대한 참조는 변하지 않음 (final)
+        final boolean[] result = {false};
 
-        accountEmailVerifyOptional.ifPresentOrElse(accountEmailVerify ->
+        accountVerifyRepository.findById(email).ifPresentOrElse(accountEmailVerify ->
                 {
                     if (accountEmailVerify.isVerified()) {
-                        throw new EmailVerifiedException(NOT_VERIFIED_EMAIL);
+                        throw new EmailVerifiedException(ALREADY_VERIFIED_EMAIL);
                     }
 
                     if (accountEmailVerify.verifyCode(code)) {
                         accountEmailVerify.setVerified(true);
+                        result[0] = true;
                     }
                 },
                 ()-> {
                     throw new NotFoundEmailException(NOT_FOUND_EMAIL);
-                }
-        );
+                });
 
-        return accountEmailVerifyOptional.get().isVerified();
+        return result[0];
     }
 
 
@@ -165,7 +160,7 @@ public class AccountService {
             return new TokenDto(accessToken, refreshToken);
         }
 
-        throw new ExpiredJwtException(null, null, INVALID_REFRESH_TOKEN);
+        throw new ExpiredJwtException(null, null, INVALID_TOKEN);
     }
 
     private Account findAccount(String accountId) {

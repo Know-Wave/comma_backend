@@ -40,8 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         createMvcMatchers(pattern);
     }
 
-    // if문, try-catch문 고민
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -55,8 +53,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String accessToken = tokenDto.getAccessToken();
         final String refreshToken = tokenDto.getRefreshToken();
 
-        if (tokenService.isExpired(accessToken)) {
-            sendErrorResponse(response, EXPIRED_ACCESS_TOKEN);
+        if (tokenService.isExpired(accessToken) ||
+                tokenService.isEmpty(accessToken) ||
+                tokenService.isEmpty(refreshToken)) {
+            sendErrorResponse(response, INVALID_TOKEN);
             return;
         }
 
@@ -67,8 +67,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final Token findToken = findTokenOptional.get();
-        if (!tokenService.isSameUser(accessToken, findToken)) {
+        if (tokenService.isTempered(accessToken, findToken)) {
             sendErrorResponse(response, TEMPERED_TOKEN);
+            return;
         }
 
         UserDetails accountDetails = tokenService.toUserDetails(findToken.getToken());

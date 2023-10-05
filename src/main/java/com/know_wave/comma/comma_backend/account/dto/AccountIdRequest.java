@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.Length;
 
 public class AccountIdRequest {
 
-    @NotEmpty(message = "{NotEmpty.accountId}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 4, max = 255, message = "{Length}")
     private String accountId;
 

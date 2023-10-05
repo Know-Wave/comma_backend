@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.Length;
 
 public class AccountPasswordRequest {
 
-    @NotEmpty(message = "{NotEmpty.password}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 8, max = 255, message = "{Length}")
     private String password;
 

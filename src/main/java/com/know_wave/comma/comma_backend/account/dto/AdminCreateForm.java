@@ -9,13 +9,13 @@ import org.hibernate.validator.constraints.Length;
 
 public class AdminCreateForm {
 
-    @NotEmpty(message = "{NotEmpty.accountId}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 4, max = 255, message = "{Length}")
     private String accountId;
-    @NotEmpty(message = "{NotEmpty.password}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 8, max = 255, message = "{Length}")
     private String password;
-    @NotEmpty(message = "{NotEmpty.name}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 2, max = 8, message = "{Length}")
     private String name;
 

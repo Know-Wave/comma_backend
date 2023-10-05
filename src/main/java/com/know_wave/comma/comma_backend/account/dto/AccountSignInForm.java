@@ -5,11 +5,11 @@ import org.hibernate.validator.constraints.Length;
 
 public class AccountSignInForm {
 
-    @NotEmpty(message = "{NotEmpty.accountId}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 4, max = 255, message = "{Length.min}")
     private String accountId;
 
-    @NotEmpty(message = "{NotEmpty.password}")
+    @NotEmpty(message = "{Required}")
     @Length(min = 8, max = 255, message = "{Length.min}")
     private String password;
 

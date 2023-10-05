@@ -8,8 +8,8 @@ import static com.know_wave.comma.comma_backend.util.StringStorage.emailRegex;
 
 public class EmailAuthRequest {
 
-    @NotEmpty(message = "{NotEmpty.email}")
-    @Email(regexp = emailRegex, message = "{Email.email}")
+    @NotEmpty(message = "{Required}")
+    @Email(regexp = emailRegex, message = "{Email}")
     private String email;
 
     public String getEmail() {

@@ -7,18 +7,18 @@ import jakarta.validation.constraints.NotNull;
 
 public class ArduinoCreateForm {
 
-    @NotEmpty(message = "{NotEmpty.name}")
+    @NotEmpty(message = "{Required}")
     private String name;
 
-    @NotNull(message = "{NotNull.count}")
+    @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
     private int count;
 
-    @NotNull(message = "{NotNull.originalCount}")
+    @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
     private int originalCount;
 
-    @NotEmpty(message = "{NotEmpty.description}")
+    @NotEmpty(message = "{Required}")
     private String description;
 
     public String getName() {
