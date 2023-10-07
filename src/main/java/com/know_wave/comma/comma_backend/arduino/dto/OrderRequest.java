@@ -8,7 +8,7 @@ public class OrderRequest {
     private String accountId;
 
     @NotEmpty(message = "{Required}")
-    private String purpose;
+    private String subject;
 
     @NotEmpty(message = "{Required}")
     private String description;
@@ -21,12 +21,12 @@ public class OrderRequest {
         this.accountId = accountId;
     }
 
-    public String getPurpose() {
-        return purpose;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getDescription() {

@@ -23,7 +23,7 @@ import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
 
 @Service
 @Transactional
-public class ArduinoService {
+public class OrderService {
 
     private final AccountRepository accountRepository;
     private final ArduinoRepository arduinoRepository;
@@ -32,7 +32,7 @@ public class ArduinoService {
     private final OrderInfoRepository orderInfoRepository;
 
 
-    public ArduinoService(AccountRepository accountRepository, ArduinoRepository arduinoRepository, BasketRepository basketRepository, OrderRepository orderRepository, OrderInfoRepository orderInfoRepository) {
+    public OrderService(AccountRepository accountRepository, ArduinoRepository arduinoRepository, BasketRepository basketRepository, OrderRepository orderRepository, OrderInfoRepository orderInfoRepository) {
         this.accountRepository = accountRepository;
         this.arduinoRepository = arduinoRepository;
         this.basketRepository = basketRepository;
@@ -44,6 +44,7 @@ public class ArduinoService {
 
         Account account = getAccount(request.getAccountId());
         Arduino arduino = getArduino(request.getArduinoId());
+
         int orderCount = request.getCount();
 
         if (Basket.isOverRequest(orderCount, arduino.getCount())) {
@@ -87,14 +88,13 @@ public class ArduinoService {
     public void order(OrderRequest request) {
 
         Account account = getAccount(request.getAccountId());
-        List<Basket> baskets = getBasketsFetchArduino(account);
+        List<Basket> baskets = getBasketsFetchArduinoAndAccount(account);
 
         if (Basket.isOverRequest(baskets)) {
             throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
         }
 
         String orderNumber = GenerateCodeUtils.getCodeByIdWithDate(account.getId());
-
         OrderInfo orderInfo = new OrderInfo(account, orderNumber, request.getSubject(), request.getDescription());
 
         List<Order> orders = Basket.toOrders(baskets, orderInfo);
@@ -107,6 +107,7 @@ public class ArduinoService {
     public List<OrderResponse> getOrder(String accountId) {
 
         List<OrderResponse> result = new ArrayList<>();
+
         Account account = getAccount(accountId);
 
         List<OrderInfo> orderInfos = getOrderInfos(account);
@@ -128,8 +129,9 @@ public class ArduinoService {
                         new OrderResponse.Arduino(order.getArduino().getId(),
                                 order.getArduino().getName(),
                                 order.getCount(),
-                                order.getArduino().getCategories()))
-                );
+                                order.getArduino().getCategories())
+                )
+            );
         });
 
         return result;
@@ -162,13 +164,15 @@ public class ArduinoService {
         List<Basket> arduinoList = basketRepository.findAllByAccount(account);
 
         ValidateUtils.throwIfEmpty(arduinoList);
+
         return arduinoList;
     }
 
-    private List<Basket> getBasketsFetchArduino(Account account) {
+    private List<Basket> getBasketsFetchArduinoAndAccount(Account account) {
         List<Basket> arduinoList = basketRepository.findAllFetchArduinoAndAccount(account);
 
         ValidateUtils.throwIfEmpty(arduinoList);
+
         return arduinoList;
     }
 

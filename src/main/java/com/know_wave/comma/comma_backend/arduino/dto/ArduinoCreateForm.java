@@ -5,10 +5,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public class ArduinoCreateForm {
 
     @NotEmpty(message = "{Required}")
-    private String name;
+    private String arduinoName;
 
     @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
@@ -21,12 +23,19 @@ public class ArduinoCreateForm {
     @NotEmpty(message = "{Required}")
     private String description;
 
-    public String getName() {
-        return name;
+    @NotEmpty(message = "{Required}")
+    private List<CategoryDto> categories;
+
+    public Arduino toEntity() {
+        return new Arduino(arduinoName, count, originalCount, description);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getArduinoName() {
+        return arduinoName;
+    }
+
+    public void setArduinoName(String arduinoName) {
+        this.arduinoName = arduinoName;
     }
 
     public int getCount() {
@@ -53,7 +62,11 @@ public class ArduinoCreateForm {
         this.description = description;
     }
 
-    public Arduino toEntity() {
-        return new Arduino(name, count, originalCount, description);
+    public List<Long> getCategories() {
+        return categories.stream().map(CategoryDto::getCategoryId).toList();
+    }
+
+    public void setCategories(List<CategoryDto> categories) {
+        this.categories = categories;
     }
 }

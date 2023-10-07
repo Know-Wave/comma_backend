@@ -5,13 +5,13 @@ import java.util.List;
 
 public class OrderResponse {
 
-    public OrderResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String purpose, List<Arduino> orderList) {
+    public OrderResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject, List<Arduino> orderList) {
         this.accountId = accountId;
         this.orderDescription = orderDescription;
         this.orderDate = orderDate;
         this.orderStatus = orderStatus;
         this.orderCode = orderCode;
-        this.purpose = purpose;
+        this.subject = subject;
         this.orderList = orderList;
     }
 
@@ -20,20 +20,22 @@ public class OrderResponse {
     private final LocalDateTime orderDate;
     private final String orderStatus;
     private final String orderCode;
-    private final String purpose;
+    private final String subject;
     private final List<Arduino> orderList;
 
     public static class Arduino {
 
-        public Arduino(Long arduinoId, String arduinoName, int orderCount) {
+        public Arduino(Long arduinoId, String arduinoName, int orderCount, List<String> category) {
             this.arduinoId = arduinoId;
             this.arduinoName = arduinoName;
             this.orderCount = orderCount;
+            this.category = category;
         }
 
         private final Long arduinoId;
         private final String arduinoName;
         private final int orderCount;
+        private final List<String> category;
 
         public Long getArduinoId() {
             return arduinoId;
@@ -45,6 +47,10 @@ public class OrderResponse {
 
         public int getOrderCount() {
             return orderCount;
+        }
+
+        public List<String> getCategory() {
+            return category;
         }
     }
 
@@ -68,8 +74,8 @@ public class OrderResponse {
         return orderCode;
     }
 
-    public String getPurpose() {
-        return purpose;
+    public String getSubject() {
+        return subject;
     }
 
     public List<Arduino> getOrderList() {

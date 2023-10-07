@@ -19,6 +19,17 @@ public class Arduino extends BaseTimeEntity {
         this.description = description;
     }
 
+    public Arduino(Long id, String name, int count, int originalCount, String description, List<ArduinoCategory> categories, List<Like> likes, List<Comment> itemComments) {
+        this.id = id;
+        this.name = name;
+        this.count = count;
+        this.originalCount = originalCount;
+        this.description = description;
+        this.categories = categories;
+        this.likes = likes;
+        this.itemComments = itemComments;
+    }
+
     @Id @GeneratedValue
     @Column(name = "arduino_id")
     private Long id;
@@ -36,7 +47,7 @@ public class Arduino extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy="arduino", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="arduino", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArduinoCategory> categories;
 
     @OneToMany(mappedBy = "arduino", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -74,5 +85,9 @@ public class Arduino extends BaseTimeEntity {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<String> getCategories() {
+        return categories.stream().map(category -> category.getCategory().getName()).toList();
     }
 }

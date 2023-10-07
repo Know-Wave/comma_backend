@@ -1,24 +1,40 @@
 package com.know_wave.comma.comma_backend.arduino.dto;
 
+import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
+
+import java.util.List;
+
 public class ArduinoResponse {
 
-    public ArduinoResponse(Long id, String name, int count, int originalCount, String description) {
+    public ArduinoResponse(Long id, String name, int count, int originalCount, String description, List<String> categories) {
         this.id = id;
         this.name = name;
         this.count = count;
         this.originalCount = originalCount;
         this.description = description;
+        this.categories = categories;
     }
 
-    private Long id;
+    public ArduinoResponse(Arduino arduino) {
+        this.id = arduino.getId();
+        this.name = arduino.getName();
+        this.count = arduino.getCount();
+        this.originalCount = arduino.getOriginalCount();
+        this.description = arduino.getDescription();
+        this.categories = arduino.getCategories();
+    }
 
-    private String name;
+    private final Long id;
 
-    private int count;
+    private final String name;
 
-    private int originalCount;
+    private final int count;
 
-    private String description;
+    private final int originalCount;
+
+    private final String description;
+
+    private final List<String> categories;
 
     public Long getId() {
         return id;
@@ -38,5 +54,9 @@ public class ArduinoResponse {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<String> getCategories() {
+        return categories;
     }
 }

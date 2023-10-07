@@ -2,15 +2,20 @@ package com.know_wave.comma.comma_backend.arduino.entity;
 
 public enum OrderStatus {
 
-    APPLIED("신청"), WAITING("대기"), REJECTED("거부"), CANCELED("취소"), COMPLETED("완료");
+    APPLIED("신청"),
+    PREPARING("준비"),
+    CANCELLATION_REQUEST("취소 요청"),
+    REJECTED("거부"),
+    CANCELED("취소"),
+    COMPLETED("완료");
 
-    private final String status;
+    private final String value;
 
-    OrderStatus(String status) {
-        this.status = status;
+    OrderStatus(String value) {
+        this.value = value;
     }
 
-    public String getStatus() {
-        return status;
+    public String getValue() {
+        return value;
     }
 }

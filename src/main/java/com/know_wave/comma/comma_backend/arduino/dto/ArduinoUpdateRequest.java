@@ -1,65 +1,77 @@
 package com.know_wave.comma.comma_backend.arduino.dto;
 
-import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public class ArduinoUpdateRequest {
 
-    private Long id;
+    private Long arduinoId;
 
     @NotEmpty(message = "{Required}")
-    private String name;
+    private String arduinoName;
 
     @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
-    private int count;
+    private int arduinoCount;
 
     @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
-    private int originalCount;
+    private int arduinoOriginalCount;
 
     @NotEmpty(message = "{Required}")
-    private String description;
+    private String arduinoDescription;
 
-    public Long getId() {
-        return id;
+    @NotEmpty(message = "{Required}")
+    private List<CategoryDto> arduinoCategories;
+
+    public Long getArduinoId() {
+        return arduinoId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setArduinoId(Long arduinoId) {
+        this.arduinoId = arduinoId;
     }
 
-    public String getName() {
-        return name;
+    public String getArduinoName() {
+        return arduinoName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setArduinoName(String arduinoName) {
+        this.arduinoName = arduinoName;
     }
 
-    public int getCount() {
-        return count;
+    public int getArduinoCount() {
+        return arduinoCount;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setArduinoCount(int arduinoCount) {
+        this.arduinoCount = arduinoCount;
     }
 
-    public int getOriginalCount() {
-        return originalCount;
+    public int getArduinoOriginalCount() {
+        return arduinoOriginalCount;
     }
 
-    public void setOriginalCount(int originalCount) {
-        this.originalCount = originalCount;
+    public void setArduinoOriginalCount(int arduinoOriginalCount) {
+        this.arduinoOriginalCount = arduinoOriginalCount;
     }
 
-    public String getDescription() {
-        return description;
+    public String getArduinoDescription() {
+        return arduinoDescription;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setArduinoDescription(String arduinoDescription) {
+        this.arduinoDescription = arduinoDescription;
+    }
+
+    public List<Long> getArduinoCategories() {
+        return arduinoCategories.stream().map(CategoryDto::getCategoryId).toList();
+    }
+
+    public void setArduinoCategories(List<CategoryDto> arduinoCategories) {
+        this.arduinoCategories = arduinoCategories;
     }
 }

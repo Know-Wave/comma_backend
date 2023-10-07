@@ -43,9 +43,9 @@ public class Basket {
         return baskets.stream().anyMatch(basket -> basket.getArduinoCount() > basket.getArduino().getCount());
     }
 
-    public static List<Order> toOrders(List<Basket> baskets, Account account, String orderNumber) {
+    public static List<Order> toOrders(List<Basket> baskets, OrderInfo orderInfo) {
         return baskets.stream()
-                .map(basket -> new Order(account, basket.getArduino(), orderNumber, basket.getArduinoCount()))
+                .map(basket -> new Order(orderInfo, basket.getArduino(), basket.getArduinoCount()))
                 .toList();
     }
 
