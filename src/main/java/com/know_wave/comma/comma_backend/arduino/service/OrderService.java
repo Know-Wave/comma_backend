@@ -141,7 +141,7 @@ public class OrderService {
 
         orderInfoRepository.findById(orderNumber).ifPresentOrElse(orderInfo -> {
                 if (!orderInfo.isCancellable()) {
-                    String message = CREATE_MESSAGE_NOT_ACCEPTABLE_ORDER_STATUS(orderInfo.getStatus());
+                    String message = NOT_ACCEPTABLE_ORDER_STATUS(orderInfo.getStatus());
                     throw new IllegalArgumentException(message);
                 }
 

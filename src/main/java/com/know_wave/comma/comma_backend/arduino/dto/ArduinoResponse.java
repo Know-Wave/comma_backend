@@ -15,13 +15,14 @@ public class ArduinoResponse {
         this.categories = categories;
     }
 
-    public ArduinoResponse(Arduino arduino) {
-        this.id = arduino.getId();
-        this.name = arduino.getName();
-        this.count = arduino.getCount();
-        this.originalCount = arduino.getOriginalCount();
-        this.description = arduino.getDescription();
-        this.categories = arduino.getCategories();
+    public static ArduinoResponse of(Arduino arduino) {
+        return new ArduinoResponse(
+                arduino.getId(),
+                arduino.getName(),
+                arduino.getCount(),
+                arduino.getOriginalCount(),
+                arduino.getDescription(),
+                arduino.getCategories());
     }
 
     private final Long id;

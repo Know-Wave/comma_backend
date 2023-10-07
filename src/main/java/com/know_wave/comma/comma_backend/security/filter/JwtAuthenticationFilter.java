@@ -3,6 +3,7 @@ package com.know_wave.comma.comma_backend.security.filter;
 import com.know_wave.comma.comma_backend.account.dto.TokenDto;
 import com.know_wave.comma.comma_backend.account.entity.token.Token;
 import com.know_wave.comma.comma_backend.account.service.TokenService;
+import com.know_wave.comma.comma_backend.util.ExceptionMessageSource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.introspector = introspector;
     }
 
-    public void requestMatchers(String... pattern) {
-        createMvcMatchers(pattern);
+    public void requestMatchers(List<RequestMatcher> matchers) {
+        this.matchers = matchers;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Optional<TokenDto> tokenDtoOptional = tokenService.mapToTokenDto(request);
         if (tokenDtoOptional.isEmpty()) {
-            sendErrorResponse(response, NOT_FOUND_TOKEN);
+            sendErrorResponse(response, PERMISSION_DENIED);
             return;
         }
 
@@ -62,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Optional<Token> findTokenOptional = tokenService.findToken(refreshToken);
         if (findTokenOptional.isEmpty()) {
-            sendErrorResponse(response, NOT_FOUND_TOKEN);
+            sendErrorResponse(response, INVALID_TOKEN);
             return;
         }
 
@@ -86,15 +87,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(message);
         response.getWriter().flush();
-    }
-
-    private void createMvcMatchers(String... patterns) {
-        matchers = new ArrayList<>(patterns.length);
-
-        for (String pattern : patterns) {
-            MvcRequestMatcher matcher = new MvcRequestMatcher(introspector, pattern);
-            matchers.add(matcher);
-        }
     }
 
     @Override

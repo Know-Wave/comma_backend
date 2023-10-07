@@ -29,7 +29,7 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "orderDescription")
+    @OneToMany(mappedBy = "orderInfo")
     private List<Order> orders;
 
     private String description;

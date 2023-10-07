@@ -12,9 +12,8 @@ public class CategoryDto {
         this.categoryName = categoryName;
     }
 
-    public CategoryDto(Category category) {
-        this.categoryId = category.getId();
-        this.categoryName = category.getName();
+    public static CategoryDto of(Category category) {
+        return new CategoryDto(category.getId(), category.getName());
     }
 
     private Long categoryId;

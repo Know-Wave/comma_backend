@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+import java.util.List;
+
 @Entity
 public class Category {
 
@@ -23,6 +25,13 @@ public class Category {
     @Column(unique = true)
     private String name;
 
+    public static boolean isUnMatchCategory(List<Category> findCategories, List<Long> requestCategories) {
+        return requestCategories.stream().noneMatch(requestCategory ->
+                findCategories.stream().anyMatch(findCategory ->
+                        findCategory.getId().equals(requestCategory)
+                )
+        );
+    }
 
     public Long getId() {
         return id;

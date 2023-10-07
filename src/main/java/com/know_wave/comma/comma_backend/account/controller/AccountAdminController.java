@@ -11,13 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin")
-public class AdminController {
+@RequestMapping("/admin/account")
+public class AccountAdminController {
 
     private final AccountAdminService accountAdminService;
     private final AccountService accountService;
 
-    public AdminController(AccountAdminService accountAdminService, AccountService accountService) {
+    public AccountAdminController(AccountAdminService accountAdminService, AccountService accountService) {
         this.accountAdminService = accountAdminService;
         this.accountService = accountService;
     }
@@ -36,21 +36,21 @@ public class AdminController {
         return ResponseEntity.ok("De-Specified " + Role.MANAGER.name() + " role, account : " + accountDto.getAccountId());
     }
 
-    @PostMapping("/account/authority")
+    @PostMapping("/authority")
     public ResponseEntity<String> addCommunityAuthority(@RequestBody @Valid AccountIdRequest accountDto) {
         accountAdminService.changeAccountRole(Role.MEMBER, accountDto.getAccountId());
 
         return ResponseEntity.ok("Updated authority account : " + accountDto.getAccountId());
     }
 
-    @DeleteMapping("/account/authority")
+    @DeleteMapping("/authority")
     public ResponseEntity<String> removeCommunityAuthority(@RequestBody @Valid AccountIdRequest accountDto) {
         accountAdminService.changeAccountRole(Role.MEMBER_NoEquipmentApplyAndCUD, accountDto.getAccountId());
 
         return ResponseEntity.ok("Updated authority account : " + accountDto.getAccountId());
     }
 
-    @DeleteMapping("/account/equipment_apply_authority")
+    @DeleteMapping("/equipment_apply_authority")
     public ResponseEntity<String> removeEquipmentApplyAuthority(@RequestBody @Valid AccountIdRequest accountDto) {
         accountAdminService.changeAccountRole(Role.MEMBER_NoEquipmentApply, accountDto.getAccountId());
 

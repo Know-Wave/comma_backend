@@ -85,6 +85,11 @@ public class TokenService {
 
     public Optional<TokenDto> mapToTokenDto(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return Optional.empty();
+        }
+
         HashMap<String, String> tokenMap = new HashMap<>();
 
         Arrays.stream(cookies)

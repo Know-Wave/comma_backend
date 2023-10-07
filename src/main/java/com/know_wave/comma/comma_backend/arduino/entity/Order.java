@@ -8,6 +8,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.groupingBy;
 
 @Entity
+@Table(name = "arduino_order")
 public class Order{
 
     protected Order() {}

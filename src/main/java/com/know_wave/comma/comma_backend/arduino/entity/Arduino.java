@@ -12,22 +12,11 @@ public class Arduino extends BaseTimeEntity {
     protected Arduino() {
     }
 
-    public Arduino(String name, int count, int originalCount, String description) {
+    public Arduino(String name, int originalCount, String description) {
         this.name = name;
-        this.count = count;
+        this.count = originalCount;
         this.originalCount = originalCount;
         this.description = description;
-    }
-
-    public Arduino(Long id, String name, int count, int originalCount, String description, List<ArduinoCategory> categories, List<Like> likes, List<Comment> itemComments) {
-        this.id = id;
-        this.name = name;
-        this.count = count;
-        this.originalCount = originalCount;
-        this.description = description;
-        this.categories = categories;
-        this.likes = likes;
-        this.itemComments = itemComments;
     }
 
     @Id @GeneratedValue
@@ -38,7 +27,7 @@ public class Arduino extends BaseTimeEntity {
     private String name;
 
     @Min(0)
-    private int count = 0;
+    private int count;
 
     @Column(nullable = false)
     @Min(0)

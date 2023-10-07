@@ -1,9 +1,6 @@
 package com.know_wave.comma.comma_backend.arduino.service;
 
-import com.know_wave.comma.comma_backend.arduino.dto.ArduinoCreateForm;
-import com.know_wave.comma.comma_backend.arduino.dto.ArduinoResponse;
-import com.know_wave.comma.comma_backend.arduino.dto.ArduinoUpdateRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.CategoryDto;
+import com.know_wave.comma.comma_backend.arduino.dto.*;
 import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 import com.know_wave.comma.comma_backend.arduino.entity.ArduinoCategory;
 import com.know_wave.comma.comma_backend.arduino.entity.Category;
@@ -27,20 +24,18 @@ public class ArduinoAdminService {
     private final ArduinoRepository arduinoRepository;
     private final CategoryCrudRepository categoryCrudRepository;
     private final ArduinoCategoryRepository arduinoCategoryRepository;
-    private final BasketRepository basketRepository;
     private final OrderRepository orderRepository;
 
-    public ArduinoAdminService(ArduinoRepository arduinoRepository, CategoryCrudRepository categoryCrudRepository, ArduinoCategoryRepository arduinoCategoryRepository, BasketRepository basketRepository, OrderRepository orderRepository) {
+    public ArduinoAdminService(ArduinoRepository arduinoRepository, CategoryCrudRepository categoryCrudRepository, ArduinoCategoryRepository arduinoCategoryRepository, OrderRepository orderRepository) {
         this.arduinoRepository = arduinoRepository;
         this.categoryCrudRepository = categoryCrudRepository;
         this.arduinoCategoryRepository = arduinoCategoryRepository;
-        this.basketRepository = basketRepository;
         this.orderRepository = orderRepository;
     }
 
     public void registerCategory(String categoryName) {
 
-        if (categoryCrudRepository.findByName(categoryName).isEmpty()) {
+        if (categoryCrudRepository.findByName(categoryName).isPresent()) {
             throw new EntityAlreadyExistException(ALREADY_EXIST_VALUE);
         }
 
@@ -63,16 +58,12 @@ public class ArduinoAdminService {
         );
     }
 
-    public List<CategoryDto> getAllCategory() {
-        Iterable<Category> findCategory = categoryCrudRepository.findAll();
-        List<Category> list = (List<Category>) findCategory;
-
-        return list.stream()
-                .map(CategoryDto::new)
-                .toList();
-    }
-
     public void registerArduino(ArduinoCreateForm form) {
+
+        var categories = (List<Category>) categoryCrudRepository.findAllById(form.getCategories());
+        if (Category.isUnMatchCategory(categories, form.getCategories())) {
+            throw new EntityNotFoundException(NOT_EXIST_CATEGORY);
+        }
 
         arduinoRepository.findByName(form.getArduinoName()).ifPresentOrElse(arduino -> {
                 throw new EntityExistsException(ALREADY_EXIST_ARDUINO);
@@ -80,13 +71,13 @@ public class ArduinoAdminService {
 
             () -> {
                 Arduino savedArduino = arduinoRepository.save(form.toEntity());
-                var categories = categoryCrudRepository.findAllById(form.getCategories());
-                categories.forEach(arduinoCategoryRepository.save(category -> new ArduinoCategory(savedArduino, category)));
+                var requestCategories = categoryCrudRepository.findAllById(form.getCategories());
+                requestCategories.forEach(requestCategory -> arduinoCategoryRepository.save(new ArduinoCategory(savedArduino, requestCategory)));
             });
     }
 
-    public void registerArduino(List<ArduinoCreateForm> forms) {
-        forms.forEach(this::registerArduino);
+    public void registerArduinoList(ArduinoCreateFormList forms) {
+        forms.getArduinoCreateForms().forEach(this::registerArduino);
     }
 
     public void updateArduino(ArduinoUpdateRequest request) {
@@ -120,19 +111,4 @@ public class ArduinoAdminService {
                 arduinoRepository::delete,
                 () -> {throw new EntityNotFoundException(NOT_FOUND_ARDUINO);});
     }
-
-    public ArduinoResponse getOne(Long id) {
-
-        Arduino arduino = arduinoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ARDUINO));
-
-        return new ArduinoResponse(
-                arduino.getId(),
-                arduino.getName(),
-                arduino.getCount(),
-                arduino.getOriginalCount(),
-                arduino.getDescription(),
-                arduino.getCategories());
-    }
-
-
 }
