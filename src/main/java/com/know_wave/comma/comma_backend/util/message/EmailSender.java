@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.util;
+package com.know_wave.comma.comma_backend.util.message;
 
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.SimpleMailMessage;

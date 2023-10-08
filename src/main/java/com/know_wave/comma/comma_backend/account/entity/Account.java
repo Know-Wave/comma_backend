@@ -1,5 +1,7 @@
 package com.know_wave.comma.comma_backend.account.entity;
 
+import com.know_wave.comma.comma_backend.arduino.entity.Order;
+import com.know_wave.comma.comma_backend.arduino.entity.OrderInfo;
 import com.know_wave.comma.comma_backend.util.entity.BaseTimeEntity;
 import com.know_wave.comma.comma_backend.account.entity.auth.Role;
 import com.know_wave.comma.comma_backend.account.entity.token.Token;
@@ -67,6 +69,9 @@ public class Account extends BaseTimeEntity implements Persistable<String> {
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Token> tokenList;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderInfo> orderList;
 
     public UserDetails toUserDetails() {
         return new SecurityAccount(this);

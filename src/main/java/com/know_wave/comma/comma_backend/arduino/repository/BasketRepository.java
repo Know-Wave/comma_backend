@@ -17,9 +17,10 @@ public interface BasketRepository extends JpaRepository<Basket, Long> {
 
     @Query("select b " +
             "from Basket b " +
-            "join fetch b.arduino " +
-            "join fetch b.account " +
+            "join fetch b.arduino ba " +
+            "join fetch ba.categories bac " +
+            "join fetch bac.category " +
             "where b.account = :account")
-    List<Basket> findAllFetchArduinoAndAccount(Account account);
+    List<Basket> findAllFetchArduinoByAccount(Account account);
 
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.PERMISSION_DENIED;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.PERMISSION_DENIED;
 
 @Service
 public class AccessDeniedHandlerService implements AccessDeniedHandler {

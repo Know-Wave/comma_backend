@@ -1,9 +1,10 @@
-package com.know_wave.comma.comma_backend.util;
+package com.know_wave.comma.comma_backend.util.message;
 
 import jakarta.validation.MessageInterpolator;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
+import org.springframework.util.StringUtils;
 
 import java.util.Locale;
 

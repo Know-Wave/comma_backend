@@ -5,6 +5,7 @@ import com.know_wave.comma.comma_backend.util.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import org.springframework.data.domain.Persistable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,10 +19,10 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
         this.subject = subject;
         this.description = description;
         this.status = OrderStatus.APPLIED;
+        this.orders = new ArrayList<>();
     }
 
     @Id
-    @GeneratedValue
     @Column(name = "order_number")
     private String orderNumber;
 
@@ -29,7 +30,7 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "orderInfo")
+    @OneToMany(mappedBy = "orderInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
     private String description;

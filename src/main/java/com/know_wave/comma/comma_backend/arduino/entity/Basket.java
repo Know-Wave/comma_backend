@@ -32,7 +32,7 @@ public class Basket {
     private Arduino arduino;
 
     @Min(0)
-    @Max(10)
+    @Max(value = 10, message = "최대 10개까지 담을 수 있습니다.")
     private int arduinoCount;
 
     public static boolean isOverRequest(int orderCount, int leftCount) {
@@ -40,7 +40,9 @@ public class Basket {
     }
 
     public static boolean isOverRequest(List<Basket> baskets) {
-        return baskets.stream().anyMatch(basket -> basket.getArduinoCount() > basket.getArduino().getCount());
+        return baskets.stream()
+                .anyMatch(basket ->
+                        isOverRequest(basket.getArduinoCount(), basket.getArduino().getCount()));
     }
 
     public static List<Order> toOrders(List<Basket> baskets, OrderInfo orderInfo) {

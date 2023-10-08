@@ -1,7 +1,7 @@
 package com.know_wave.comma.comma_backend.account.entity;
 
 import com.know_wave.comma.comma_backend.util.entity.BaseTimeEntity;
-import com.know_wave.comma.comma_backend.util.EmailSender;
+import com.know_wave.comma.comma_backend.util.message.EmailSender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -4,21 +4,23 @@ import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 
 import java.util.List;
 
-public class ArduinoResponse {
+public class ArduinoAdminResponse {
 
-    public ArduinoResponse(Long arduinoId, String arduinoName, int remainingCount, String arduinoDescription, List<String> arduinoCategories) {
+    public ArduinoAdminResponse(Long arduinoId, String arduinoName, int arduinoCount, int arduinoOriginalCount, String arduinoDescription, List<String> arduinoCategories) {
         this.arduinoId = arduinoId;
         this.arduinoName = arduinoName;
-        this.remainingCount = remainingCount;
+        this.arduinoCount = arduinoCount;
+        this.arduinoOriginalCount = arduinoOriginalCount;
         this.arduinoDescription = arduinoDescription;
         this.arduinoCategories = arduinoCategories;
     }
 
-    public static ArduinoResponse of(Arduino arduino) {
-        return new ArduinoResponse(
+    public static ArduinoAdminResponse of(Arduino arduino) {
+        return new ArduinoAdminResponse(
                 arduino.getId(),
                 arduino.getName(),
                 arduino.getCount(),
+                arduino.getOriginalCount(),
                 arduino.getDescription(),
                 arduino.getCategories());
     }
@@ -27,7 +29,9 @@ public class ArduinoResponse {
 
     private final String arduinoName;
 
-    private final int remainingCount;
+    private final int arduinoCount;
+
+    private final int arduinoOriginalCount;
 
     private final String arduinoDescription;
 
@@ -41,8 +45,12 @@ public class ArduinoResponse {
         return arduinoName;
     }
 
-    public int getRemainingCount() {
-        return remainingCount;
+    public int getArduinoCount() {
+        return arduinoCount;
+    }
+
+    public int getArduinoOriginalCount() {
+        return arduinoOriginalCount;
     }
 
     public String getArduinoDescription() {

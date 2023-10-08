@@ -47,6 +47,8 @@ public class SecurityConfig {
 
         MvcRequestMatcher getArduino = new MvcRequestMatcher(handlerIntroceptor, "/arduino/*");
         getArduino.setMethod(HttpMethod.GET);
+        MvcRequestMatcher getArduinoList = new MvcRequestMatcher(handlerIntroceptor, "/arduinos/**");
+        getArduinoList.setMethod(HttpMethod.GET);
 
         userPermitRequestMatchers = new MvcRequestMatcher[]{
                 new MvcRequestMatcher(handlerIntroceptor, "/account/signin"),
@@ -54,7 +56,7 @@ public class SecurityConfig {
                 new MvcRequestMatcher(handlerIntroceptor, "/account/email/r"),
                 new MvcRequestMatcher(handlerIntroceptor, "/account/email/verify"),
                 getArduino,
-                new MvcRequestMatcher(handlerIntroceptor, "/arduinos/**")
+                getArduinoList,
         };
 
         adminPermitRequestMatchers = new MvcRequestMatcher[]{

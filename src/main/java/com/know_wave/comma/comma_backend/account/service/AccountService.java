@@ -12,14 +12,13 @@ import com.know_wave.comma.comma_backend.account.repository.AccountVerifyReposit
 import com.know_wave.comma.comma_backend.exception.EmailVerifiedException;
 import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
 import com.know_wave.comma.comma_backend.exception.TokenNotFound;
-import com.know_wave.comma.comma_backend.util.EmailSender;
+import com.know_wave.comma.comma_backend.util.message.EmailSender;
 import com.know_wave.comma.comma_backend.util.GenerateCodeUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
 import static com.know_wave.comma.comma_backend.util.SecurityUtils.getAuthenticatedId;
 
 @Service

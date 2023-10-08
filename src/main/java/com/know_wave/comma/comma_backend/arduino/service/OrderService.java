@@ -2,9 +2,7 @@ package com.know_wave.comma.comma_backend.arduino.service;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
 import com.know_wave.comma.comma_backend.account.repository.AccountRepository;
-import com.know_wave.comma.comma_backend.arduino.dto.ArduinoBasketRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.OrderRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.OrderResponse;
+import com.know_wave.comma.comma_backend.arduino.dto.*;
 import com.know_wave.comma.comma_backend.arduino.entity.*;
 import com.know_wave.comma.comma_backend.arduino.repository.ArduinoRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.BasketRepository;
@@ -19,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
 import static com.know_wave.comma.comma_backend.util.SecurityUtils.getAuthenticatedId;
 
 @Service
@@ -41,7 +39,17 @@ public class OrderService {
         this.orderInfoRepository = orderInfoRepository;
     }
 
-    public void addArduinoToBasket(ArduinoBasketRequest request) {
+    public BasketResponse getBasket() {
+
+        Account account = getAccount(getAuthenticatedId());
+        List<Basket> baskets = getBasketsFetchArduino(account);
+
+        ValidateUtils.throwIfEmpty(baskets);
+
+        return BasketResponse.of(baskets);
+    }
+
+    public void addArduinoToBasket(BasketRequest request) {
 
         Account account = getAccount(getAuthenticatedId());
         Arduino arduino = getArduino(request.getArduinoId());
@@ -58,20 +66,24 @@ public class OrderService {
                         () -> basketRepository.save(new Basket(account, arduino, orderCount)));
     }
 
-    public void deleteArduinoFromBasket(ArduinoBasketRequest request) {
+    public void deleteArduinoFromBasket(BasketDeleteRequest request) {
 
         Account account = getAccount(getAuthenticatedId());
         Arduino arduino = getArduino(request.getArduinoId());
 
         basketRepository.findByAccountAndArduino(account, arduino)
                 .ifPresentOrElse(basketRepository::delete,
-                                () -> basketRepository.save(new Basket(account, arduino, request.getCount())));
+                                () -> {throw new EntityNotFoundException(NOT_FOUND_VALUE);});
     }
 
-    public void updateArduinoFromBasket(ArduinoBasketRequest request) {
+    public void updateArduinoFromBasket(BasketRequest request) {
 
         Account account = getAccount(getAuthenticatedId());
         Arduino arduino = getArduino(request.getArduinoId());
+
+        if (Basket.isOverRequest(request.getCount(), arduino.getCount())) {
+            throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
+        }
 
         basketRepository.findByAccountAndArduino(account, arduino)
                 .ifPresentOrElse(basket ->
@@ -88,8 +100,8 @@ public class OrderService {
 
     public void order(OrderRequest request) {
 
-        Account account = getAccount(request.getAccountId());
-        List<Basket> baskets = getBasketsFetchArduinoAndAccount(account);
+        Account account = getAccount(getAuthenticatedId());
+        List<Basket> baskets = getBasketsFetchArduino(account);
 
         if (Basket.isOverRequest(baskets) || Basket.isEmpty(baskets)) {
             throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
@@ -98,42 +110,60 @@ public class OrderService {
         String orderNumber = GenerateCodeUtils.getCodeByIdWithDate(account.getId());
         OrderInfo orderInfo = new OrderInfo(account, orderNumber, request.getSubject(), request.getDescription());
 
-        List<Order> orders = Basket.toOrders(baskets, orderInfo);
+        List<Order> orders = Order.ofList(baskets, orderInfo);
 
-        orderRepository.saveAll(orders);
+//        orderRepository.saveAll(orders);
         orderInfoRepository.save(orderInfo);
         basketRepository.deleteAll(baskets);
     }
 
-    public List<OrderResponse> getOrders() {
+    public OrderDetailResponse getOrderDetail(String orderNumber) {
 
         final String accountId = getAuthenticatedId();
+        OrderInfo orderInfo = getOrderInfo(orderNumber);
+
+        var orderArduinoList = new ArrayList<OrderDetailResponse.Arduino>();
+
+        OrderDetailResponse result = new OrderDetailResponse(
+                accountId,
+                orderInfo.getDescription(),
+                orderInfo.getCreatedDate(),
+                orderInfo.getStatus().getValue(),
+                orderInfo.getOrderNumber(),
+                orderInfo.getSubject(),
+                orderArduinoList
+        );
+
+        orderInfo.getOrders().forEach(order ->
+                orderArduinoList.add(
+                        new OrderDetailResponse.Arduino(order.getArduino().getId(),
+                                order.getArduino().getName(),
+                                order.getCount(),
+                                order.getArduino().getCategories())
+                )
+        );
+
+        return result;
+    }
+
+    public List<OrderResponse> getOrders() {
+
         List<OrderResponse> result = new ArrayList<>();
 
+        final String accountId = getAuthenticatedId();
         Account account = getAccount(accountId);
         List<OrderInfo> orderInfos = getOrderInfos(account);
 
-        orderInfos.forEach(orderInfo -> {
-            var arduinoList = new ArrayList<OrderResponse.Arduino>();
-
+        orderInfos.forEach(orderInfo ->
             result.add(new OrderResponse(
                     accountId,
                     orderInfo.getDescription(),
                     orderInfo.getCreatedDate(),
                     orderInfo.getStatus().getValue(),
                     orderInfo.getOrderNumber(),
-                    orderInfo.getSubject(),
-                    arduinoList));
-
-            orderInfo.getOrders().forEach(order ->
-                arduinoList.add(
-                        new OrderResponse.Arduino(order.getArduino().getId(),
-                                order.getArduino().getName(),
-                                order.getCount(),
-                                order.getArduino().getCategories())
-                )
-            );
-        });
+                    orderInfo.getSubject())
+            )
+        );
 
         return result;
     }
@@ -154,8 +184,13 @@ public class OrderService {
         );
     }
 
+    private OrderInfo getOrderInfo(String orderNumber) {
+        return orderInfoRepository.findFetchById(orderNumber)
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_VALUE));
+    }
+
     private List<OrderInfo> getOrderInfos(Account account) {
-        List<OrderInfo> orderInfos = orderInfoRepository.findAllFetchOrderAndArduino(account);
+        List<OrderInfo> orderInfos = orderInfoRepository.findAllByAccount(account);
 
         ValidateUtils.throwIfEmpty(orderInfos);
         return orderInfos;
@@ -169,8 +204,8 @@ public class OrderService {
         return arduinoList;
     }
 
-    private List<Basket> getBasketsFetchArduinoAndAccount(Account account) {
-        List<Basket> arduinoList = basketRepository.findAllFetchArduinoAndAccount(account);
+    private List<Basket> getBasketsFetchArduino(Account account) {
+        List<Basket> arduinoList = basketRepository.findAllFetchArduinoByAccount(account);
 
         ValidateUtils.throwIfEmpty(arduinoList);
 

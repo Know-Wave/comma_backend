@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.NOT_FOUND_TOKEN;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.NOT_FOUND_TOKEN;
 
 @Service
 @Transactional

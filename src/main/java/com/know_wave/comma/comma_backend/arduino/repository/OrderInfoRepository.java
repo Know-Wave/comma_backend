@@ -10,12 +10,12 @@ import java.util.Optional;
 
 public interface OrderInfoRepository extends CrudRepository<OrderInfo, String> {
 
+    List<OrderInfo> findAllByAccount(Account account);
+
     @Query("select oi " +
             "from OrderInfo oi " +
             "join fetch oi.orders oo " +
             "join fetch oo.arduino " +
-            "join fetch oo.arduino.categories " +
-            "where oi.account = :account")
-    List<OrderInfo> findAllFetchOrderAndArduino(Account account);
-
+            "where oi.orderNumber = :orderNumber")
+    Optional<OrderInfo> findFetchById(String orderNumber);
 }

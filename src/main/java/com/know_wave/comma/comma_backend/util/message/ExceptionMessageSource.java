@@ -1,9 +1,10 @@
-package com.know_wave.comma.comma_backend.util;
+package com.know_wave.comma.comma_backend.util.message;
 
 import com.know_wave.comma.comma_backend.arduino.entity.OrderStatus;
 
 public class ExceptionMessageSource {
 
+    public static final String NOT_AUTHENTICATED_REQUEST = "Not authenticated request";
     public static final String ALREADY_VERIFIED_EMAIL = "Already verified email";
     public static final String NOT_VERIFIED_EMAIL = "Not verified email";
     public static final String NOT_FOUND_EMAIL = "Not found email";

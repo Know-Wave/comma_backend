@@ -1,14 +1,17 @@
 package com.know_wave.comma.comma_backend.arduino.dto;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
-public class ArduinoBasketRequest {
+public class BasketRequest {
 
-    @NotEmpty(message = "{Required}")
+    @NotNull(message = "{Required}")
+    @Min(value = 1, message = "{NotAcceptable.range}")
     private Long arduinoId;
 
     @Min(value = 1, message = "{NotAcceptable.range}")
+    @Max(value = 10, message = "{NotAcceptable.range}")
     private int count;
 
     public Long getArduinoId() {

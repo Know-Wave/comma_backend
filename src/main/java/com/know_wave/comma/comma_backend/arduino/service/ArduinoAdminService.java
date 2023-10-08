@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
 
 @Service
 @Transactional

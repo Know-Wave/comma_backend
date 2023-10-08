@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/arduino")
+@RequestMapping("/admin")
 public class ArduinoAdminController {
 
     private final ArduinoAdminService adminService;
@@ -20,43 +20,43 @@ public class ArduinoAdminController {
         this.adminService = adminService;
     }
 
-    @PostMapping("/category")
+    @PostMapping("/arduino/category")
     public ResponseEntity<String> addCategory(@Valid @RequestBody CategoryNameDto request) {
-        adminService.registerCategory(request.getCategoryName());
+        adminService.registerCategory(request.getCategoryName().trim());
         return new ResponseEntity<>("Created category", HttpStatus.CREATED);
     }
 
-    @PatchMapping("/category/{id}")
+    @PatchMapping("/arduino/category/{id}")
     public ResponseEntity<String> updateCategory(@PathVariable("id") Long id, @Valid @RequestBody CategoryNameDto request) {
         adminService.updateCategory(id, request.getCategoryName());
         return new ResponseEntity<>("Updated category", HttpStatus.OK);
     }
 
-    @DeleteMapping("/category/{id}")
+    @DeleteMapping("/arduino/category/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable("id") Long id) {
         adminService.deleteCategory(id);
         return new ResponseEntity<>("Deleted category", HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/arduino")
     public ResponseEntity<String> addArduino(@Valid @RequestBody ArduinoCreateForm form) {
         adminService.registerArduino(form);
         return new ResponseEntity<>("Created arduino", HttpStatus.CREATED);
     }
 
-    @PostMapping("/list")
+    @PostMapping("/arduinos")
     public ResponseEntity<String> addArduinoList(@Valid @RequestBody ArduinoCreateFormList forms) {
         adminService.registerArduinoList(forms);
         return new ResponseEntity<>("Created arduino list", HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/arduino/{id}")
     public ResponseEntity<String> updateArduino(@PathVariable("id") Long id, @Valid @RequestBody ArduinoUpdateRequest form) {
         adminService.updateArduino(id, form);
         return new ResponseEntity<>("Updated arduino", HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/arduino/{id}")
     public ResponseEntity<String> deleteArduino(@PathVariable("id") Long id) {
         adminService.deleteArduino(id);
         return new ResponseEntity<>("Deleted arduino", HttpStatus.OK);

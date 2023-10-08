@@ -5,7 +5,7 @@ import org.springframework.util.Assert;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.NOT_FOUND_VALUE;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.NOT_FOUND_VALUE;
 
 public class ValidateUtils {
 
