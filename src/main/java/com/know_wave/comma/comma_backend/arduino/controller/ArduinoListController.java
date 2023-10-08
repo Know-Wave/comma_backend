@@ -6,10 +6,15 @@ import com.know_wave.comma.comma_backend.arduino.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/arduinos")
@@ -27,13 +32,19 @@ public class ArduinoListController {
     }
 
     @GetMapping
-    public Page<ArduinoResponse> getArduinoList() {
-        return arduinoService.getFirstPage(defaultPageSize);
+    public ResponseEntity<Page<ArduinoResponse>> getArduinoList() {
+        var result = arduinoService.getFirstPage(defaultPageSize);
+
+        return result.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{page}")
-    public Page<ArduinoResponse> getArduinoList(@PathVariable("page") int page) {
-        return arduinoService.getPage(PageRequest.of(page, defaultPageSize));
+    public ResponseEntity<Page<ArduinoResponse>> getArduinoListPaging(@PathVariable("page") int page, Pageable pageable) {
+        var result = arduinoService.getPage(PageRequest.of(page, defaultPageSize, pageable.getSort()));
+
+        return result.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }

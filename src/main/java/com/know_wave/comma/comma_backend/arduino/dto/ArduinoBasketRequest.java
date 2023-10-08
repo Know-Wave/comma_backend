@@ -7,8 +7,6 @@ public class ArduinoBasketRequest {
 
     @NotEmpty(message = "{Required}")
     private Long arduinoId;
-    @NotEmpty(message = "{Required}")
-    private String accountId;
 
     @Min(value = 1, message = "{NotAcceptable.range}")
     private int count;
@@ -21,13 +19,6 @@ public class ArduinoBasketRequest {
         this.arduinoId = arduinoId;
     }
 
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
 
     public int getCount() {
         return count;

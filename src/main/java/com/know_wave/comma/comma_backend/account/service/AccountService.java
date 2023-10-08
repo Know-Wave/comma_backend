@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
+import static com.know_wave.comma.comma_backend.util.SecurityUtils.getAuthenticatedId;
 
 @Service
 @Transactional
@@ -197,9 +198,6 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(password));
     }
 
-    private static String getAuthenticatedId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
 
     public void deleteAccount() {
         String accountId = getAuthenticatedId();

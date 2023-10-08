@@ -1,24 +1,23 @@
 package com.know_wave.comma.comma_backend.arduino.service;
 
-import com.know_wave.comma.comma_backend.account.entity.Account;
-import com.know_wave.comma.comma_backend.account.repository.AccountRepository;
-import com.know_wave.comma.comma_backend.arduino.dto.*;
-import com.know_wave.comma.comma_backend.arduino.entity.*;
-import com.know_wave.comma.comma_backend.arduino.repository.*;
-import com.know_wave.comma.comma_backend.exception.EntityAlreadyExistException;
-import com.know_wave.comma.comma_backend.util.GenerateCodeUtils;
-import com.know_wave.comma.comma_backend.util.ValidateUtils;
+import com.know_wave.comma.comma_backend.arduino.dto.ArduinoResponse;
+import com.know_wave.comma.comma_backend.arduino.dto.CategoryDto;
+import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
+import com.know_wave.comma.comma_backend.arduino.entity.Category;
+import com.know_wave.comma.comma_backend.arduino.repository.ArduinoRepository;
+import com.know_wave.comma.comma_backend.arduino.repository.CategoryCrudRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
-import static java.util.stream.Collectors.toList;
+import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.NOT_FOUND_VALUE;
 
 @Service
 @Transactional
@@ -33,8 +32,12 @@ public class ArduinoService {
     }
 
     public List<CategoryDto> getAllCategories() {
-        var result = (List<Category>) categoryRepository.findAll();
-        return result.stream().map(CategoryDto::of).toList();
+        var categories = (List<Category>) categoryRepository.findAll();
+
+        return categories.stream()
+                .map(CategoryDto::of)
+                .sorted(Comparator.comparing(CategoryDto::getCategoryName))
+                .toList();
     }
 
     public ArduinoResponse getOne(Long id) {
@@ -44,13 +47,19 @@ public class ArduinoService {
         return ArduinoResponse.of(arduino);
     }
 
-    public Page<ArduinoResponse> getFirstPage(int size) {
+    public Optional<Page<ArduinoResponse>> getFirstPage(int size) {
         return getPage(Pageable.ofSize(size));
     }
 
-    public Page<ArduinoResponse> getPage(Pageable pageable) {
-        return arduinoRepository.findAll(pageable)
+    public Optional<Page<ArduinoResponse>> getPage(Pageable pageable) {
+        Page<ArduinoResponse> result = arduinoRepository.findAll(pageable)
                 .map(ArduinoResponse::of);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result);
     }
 
 }

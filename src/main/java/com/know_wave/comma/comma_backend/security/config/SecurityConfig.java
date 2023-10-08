@@ -40,12 +40,12 @@ public class SecurityConfig {
         this.logoutService = logoutService;
         this.accessDeniedHandler = accessDeniedHandler;
         this.handlerIntroceptor = handlerIntroceptor;
-        initJwtFilter();
+        initPermitRequests();
     }
 
-    private void initJwtFilter() {
+    private void initPermitRequests() {
 
-        MvcRequestMatcher getArduino = new MvcRequestMatcher(handlerIntroceptor, "/arduino/{id}");
+        MvcRequestMatcher getArduino = new MvcRequestMatcher(handlerIntroceptor, "/arduino/*");
         getArduino.setMethod(HttpMethod.GET);
 
         userPermitRequestMatchers = new MvcRequestMatcher[]{
@@ -62,6 +62,7 @@ public class SecurityConfig {
         };
 
 
+        // custom filter permit requests configuration
         jwtAuthenticationFilter.requestMatchers(
                 Stream.concat(
                         Arrays.stream(userPermitRequestMatchers),

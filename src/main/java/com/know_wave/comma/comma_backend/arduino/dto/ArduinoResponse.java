@@ -6,13 +6,13 @@ import java.util.List;
 
 public class ArduinoResponse {
 
-    public ArduinoResponse(Long id, String name, int count, int originalCount, String description, List<String> categories) {
-        this.id = id;
-        this.name = name;
-        this.count = count;
-        this.originalCount = originalCount;
-        this.description = description;
-        this.categories = categories;
+    public ArduinoResponse(Long arduinoId, String arduinoName, int arduinoCount, int arduinoOriginalCount, String arduinoDescription, List<String> arduinoCategories) {
+        this.arduinoId = arduinoId;
+        this.arduinoName = arduinoName;
+        this.arduinoCount = arduinoCount;
+        this.arduinoOriginalCount = arduinoOriginalCount;
+        this.arduinoDescription = arduinoDescription;
+        this.arduinoCategories = arduinoCategories;
     }
 
     public static ArduinoResponse of(Arduino arduino) {
@@ -25,39 +25,39 @@ public class ArduinoResponse {
                 arduino.getCategories());
     }
 
-    private final Long id;
+    private final Long arduinoId;
 
-    private final String name;
+    private final String arduinoName;
 
-    private final int count;
+    private final int arduinoCount;
 
-    private final int originalCount;
+    private final int arduinoOriginalCount;
 
-    private final String description;
+    private final String arduinoDescription;
 
-    private final List<String> categories;
+    private final List<String> arduinoCategories;
 
-    public Long getId() {
-        return id;
+    public Long getArduinoId() {
+        return arduinoId;
     }
 
-    public String getName() {
-        return name;
+    public String getArduinoName() {
+        return arduinoName;
     }
 
-    public int getCount() {
-        return count;
+    public int getArduinoCount() {
+        return arduinoCount;
     }
 
-    public int getOriginalCount() {
-        return originalCount;
+    public int getArduinoOriginalCount() {
+        return arduinoOriginalCount;
     }
 
-    public String getDescription() {
-        return description;
+    public String getArduinoDescription() {
+        return arduinoDescription;
     }
 
-    public List<String> getCategories() {
-        return categories;
+    public List<String> getArduinoCategories() {
+        return arduinoCategories;
     }
 }

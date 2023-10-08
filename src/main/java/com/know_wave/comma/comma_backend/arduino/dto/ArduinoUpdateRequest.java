@@ -8,70 +8,62 @@ import java.util.List;
 
 public class ArduinoUpdateRequest {
 
-    private Long arduinoId;
-
     @NotEmpty(message = "{Required}")
-    private String arduinoName;
+    private String modifiedArduinoName;
 
     @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
-    private int arduinoCount;
+    private int modifiedArduinoCount;
 
     @NotNull(message = "{Required}")
     @Min(value = 0, message = "{NotAcceptable.range}")
-    private int arduinoOriginalCount;
+    private int modifiedArduinoOriginalCount;
 
     @NotEmpty(message = "{Required}")
-    private String arduinoDescription;
+    private String modifiedArduinoDescription;
 
     @NotEmpty(message = "{Required}")
-    private List<CategoryDto> arduinoCategories;
+    private List<CategoryIdDto> modifiedArduinoCategories;
 
-    public Long getArduinoId() {
-        return arduinoId;
+
+
+    public String getModifiedArduinoName() {
+        return modifiedArduinoName;
     }
 
-    public void setArduinoId(Long arduinoId) {
-        this.arduinoId = arduinoId;
+    public void setModifiedArduinoName(String modifiedArduinoName) {
+        this.modifiedArduinoName = modifiedArduinoName;
     }
 
-    public String getArduinoName() {
-        return arduinoName;
+    public int getModifiedArduinoCount() {
+        return modifiedArduinoCount;
     }
 
-    public void setArduinoName(String arduinoName) {
-        this.arduinoName = arduinoName;
+    public void setModifiedArduinoCount(int modifiedArduinoCount) {
+        this.modifiedArduinoCount = modifiedArduinoCount;
     }
 
-    public int getArduinoCount() {
-        return arduinoCount;
+    public int getModifiedArduinoOriginalCount() {
+        return modifiedArduinoOriginalCount;
     }
 
-    public void setArduinoCount(int arduinoCount) {
-        this.arduinoCount = arduinoCount;
+    public void setModifiedArduinoOriginalCount(int modifiedArduinoOriginalCount) {
+        this.modifiedArduinoOriginalCount = modifiedArduinoOriginalCount;
     }
 
-    public int getArduinoOriginalCount() {
-        return arduinoOriginalCount;
+    public String getModifiedArduinoDescription() {
+        return modifiedArduinoDescription;
     }
 
-    public void setArduinoOriginalCount(int arduinoOriginalCount) {
-        this.arduinoOriginalCount = arduinoOriginalCount;
+    public void setModifiedArduinoDescription(String modifiedArduinoDescription) {
+        this.modifiedArduinoDescription = modifiedArduinoDescription;
     }
 
-    public String getArduinoDescription() {
-        return arduinoDescription;
+    public List<Long> getModifiedArduinoCategories() {
+        return modifiedArduinoCategories.stream().map(CategoryIdDto::getCategoryId).toList();
     }
 
-    public void setArduinoDescription(String arduinoDescription) {
-        this.arduinoDescription = arduinoDescription;
-    }
-
-    public List<Long> getArduinoCategories() {
-        return arduinoCategories.stream().map(CategoryDto::getCategoryId).toList();
-    }
-
-    public void setArduinoCategories(List<CategoryDto> arduinoCategories) {
-        this.arduinoCategories = arduinoCategories;
+    public void setModifiedArduinoCategories(List<CategoryIdDto> modifiedArduinoCategories) {
+        this.modifiedArduinoCategories = modifiedArduinoCategories;
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com.know_wave.comma.comma_backend.util.ExceptionMessageSource.*;
+import static com.know_wave.comma.comma_backend.util.SecurityUtils.getAuthenticatedId;
 
 @Service
 @Transactional
@@ -42,7 +43,7 @@ public class OrderService {
 
     public void addArduinoToBasket(ArduinoBasketRequest request) {
 
-        Account account = getAccount(request.getAccountId());
+        Account account = getAccount(getAuthenticatedId());
         Arduino arduino = getArduino(request.getArduinoId());
 
         int orderCount = request.getCount();
@@ -59,7 +60,7 @@ public class OrderService {
 
     public void deleteArduinoFromBasket(ArduinoBasketRequest request) {
 
-        Account account = getAccount(request.getAccountId());
+        Account account = getAccount(getAuthenticatedId());
         Arduino arduino = getArduino(request.getArduinoId());
 
         basketRepository.findByAccountAndArduino(account, arduino)
@@ -69,7 +70,7 @@ public class OrderService {
 
     public void updateArduinoFromBasket(ArduinoBasketRequest request) {
 
-        Account account = getAccount(request.getAccountId());
+        Account account = getAccount(getAuthenticatedId());
         Arduino arduino = getArduino(request.getArduinoId());
 
         basketRepository.findByAccountAndArduino(account, arduino)
@@ -78,8 +79,8 @@ public class OrderService {
                     () -> {throw new EntityNotFoundException(NOT_FOUND_VALUE);});
     }
 
-    public void emptyBasket(String accountId) {
-        Account account = getAccount(accountId);
+    public void emptyBasket() {
+        Account account = getAccount(getAuthenticatedId());
         List<Basket> basket = getBaskets(account);
 
         basketRepository.deleteAll(basket);
@@ -90,7 +91,7 @@ public class OrderService {
         Account account = getAccount(request.getAccountId());
         List<Basket> baskets = getBasketsFetchArduinoAndAccount(account);
 
-        if (Basket.isOverRequest(baskets)) {
+        if (Basket.isOverRequest(baskets) || Basket.isEmpty(baskets)) {
             throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
         }
 
@@ -104,12 +105,12 @@ public class OrderService {
         basketRepository.deleteAll(baskets);
     }
 
-    public List<OrderResponse> getOrder(String accountId) {
+    public List<OrderResponse> getOrders() {
 
+        final String accountId = getAuthenticatedId();
         List<OrderResponse> result = new ArrayList<>();
 
         Account account = getAccount(accountId);
-
         List<OrderInfo> orderInfos = getOrderInfos(account);
 
         orderInfos.forEach(orderInfo -> {

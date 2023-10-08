@@ -49,6 +49,10 @@ public class Basket {
                 .toList();
     }
 
+    public static boolean isEmpty(List<Basket> baskets) {
+        return baskets.isEmpty();
+    }
+
     public Arduino getArduino() {
         return arduino;
     }

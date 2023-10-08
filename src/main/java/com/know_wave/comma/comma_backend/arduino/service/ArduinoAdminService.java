@@ -60,16 +60,17 @@ public class ArduinoAdminService {
 
     public void registerArduino(ArduinoCreateForm form) {
 
-        var categories = (List<Category>) categoryCrudRepository.findAllById(form.getCategories());
-        if (Category.isUnMatchCategory(categories, form.getCategories())) {
-            throw new EntityNotFoundException(NOT_EXIST_CATEGORY);
-        }
-
         arduinoRepository.findByName(form.getArduinoName()).ifPresentOrElse(arduino -> {
                 throw new EntityExistsException(ALREADY_EXIST_ARDUINO);
             },
 
             () -> {
+
+                var categories = (List<Category>) categoryCrudRepository.findAllById(form.getCategories());
+                if (Category.isUnMatchCategory(categories, form.getCategories())) {
+                    throw new EntityNotFoundException(NOT_EXIST_CATEGORY);
+                }
+
                 Arduino savedArduino = arduinoRepository.save(form.toEntity());
                 var requestCategories = categoryCrudRepository.findAllById(form.getCategories());
                 requestCategories.forEach(requestCategory -> arduinoCategoryRepository.save(new ArduinoCategory(savedArduino, requestCategory)));
@@ -80,16 +81,16 @@ public class ArduinoAdminService {
         forms.getArduinoCreateForms().forEach(this::registerArduino);
     }
 
-    public void updateArduino(ArduinoUpdateRequest request) {
+    public void updateArduino(Long id, ArduinoUpdateRequest request) {
 
-        arduinoRepository.findById(request.getArduinoId()).ifPresentOrElse(arduino -> {
+        arduinoRepository.findById(id).ifPresentOrElse(arduino -> {
 
-                arduino.update(request.getArduinoName(), request.getArduinoCount(), request.getArduinoOriginalCount(), request.getArduinoDescription());
+                arduino.update(request.getModifiedArduinoName(), request.getModifiedArduinoCount(), request.getModifiedArduinoOriginalCount(), request.getModifiedArduinoDescription());
 
                 // category update logic
                 // compare request category, own category
                 // then save new request category if nothing matches
-                var RequestCategories = categoryCrudRepository.findAllById(request.getArduinoCategories());
+                var RequestCategories = categoryCrudRepository.findAllById(request.getModifiedArduinoCategories());
                 var OwnCategories = arduinoCategoryRepository.findAllFetchByArduino(arduino);
 
                 RequestCategories.forEach(requestCategory -> {
