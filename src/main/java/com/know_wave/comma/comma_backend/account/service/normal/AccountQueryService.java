@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.account.service;
+package com.know_wave.comma.comma_backend.account.service.normal;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
 import com.know_wave.comma.comma_backend.account.repository.AccountRepository;

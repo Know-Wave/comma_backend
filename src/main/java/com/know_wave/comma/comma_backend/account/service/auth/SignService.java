@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.account.service;
+package com.know_wave.comma.comma_backend.account.service.auth;
 
 import com.know_wave.comma.comma_backend.account.dto.AccountCreateForm;
 import com.know_wave.comma.comma_backend.account.dto.AccountSignInForm;
@@ -11,6 +11,7 @@ import com.know_wave.comma.comma_backend.account.entity.auth.Role;
 import com.know_wave.comma.comma_backend.account.entity.token.Token;
 import com.know_wave.comma.comma_backend.account.repository.AccountRepository;
 import com.know_wave.comma.comma_backend.account.repository.AccountVerifyRepository;
+import com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService;
 import com.know_wave.comma.comma_backend.exception.EmailVerifiedException;
 import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
 import com.know_wave.comma.comma_backend.exception.TokenNotFound;

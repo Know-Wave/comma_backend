@@ -3,7 +3,8 @@ package com.know_wave.comma.comma_backend.arduino.controller;
 import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketDeleteRequest;
 import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketRequest;
 import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketResponse;
-import com.know_wave.comma.comma_backend.arduino.service.OrderService;
+import com.know_wave.comma.comma_backend.arduino.service.normal.BasketService;
+import com.know_wave.comma.comma_backend.arduino.service.normal.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,38 +14,38 @@ import java.util.List;
 @RequestMapping("/basket")
 public class BasketController {
 
-    private final OrderService orderService;
+    private final BasketService basketService;
 
-    public BasketController(OrderService orderService) {
-        this.orderService = orderService;
+    public BasketController(BasketService basketService) {
+        this.basketService = basketService;
     }
 
     @GetMapping
     public List<BasketResponse> getBasket() {
-        return orderService.getBasket();
+        return basketService.getBasket();
     }
 
     @PostMapping("/arduino")
     public String addArduinoToBasket(@Valid @RequestBody BasketRequest request) {
-        orderService.addArduinoToBasket(request);
+        basketService.addArduinoToBasket(request);
         return "Added arduino to basket";
     }
 
     @DeleteMapping("/arduino")
     public String deleteArduinoFromBasket(@Valid @RequestBody BasketDeleteRequest request) {
-        orderService.deleteArduinoFromBasket(request);
+        basketService.deleteArduinoFromBasket(request);
         return "Deleted arduino from basket";
     }
 
     @PatchMapping("/arduino")
     public String updateArduinoFromBasket(@Valid @RequestBody BasketRequest request) {
-        orderService.updateArduinoFromBasket(request);
+        basketService.updateArduinoFromBasket(request);
         return "Updated arduino from basket";
     }
 
     @DeleteMapping
     public String emptyBasket() {
-        orderService.emptyBasket();
+        basketService.emptyBasket();
         return "Deleted all arduino from basket";
     }
 }

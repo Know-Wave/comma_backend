@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.account.service;
+package com.know_wave.comma.comma_backend.account.service.normal;
 
 import com.know_wave.comma.comma_backend.account.dto.AccountResponse;
 import com.know_wave.comma.comma_backend.account.entity.Account;
@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.know_wave.comma.comma_backend.account.service.AccountQueryService.getAuthenticatedId;
+import static com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService.getAuthenticatedId;
 
 @Service
 @Transactional

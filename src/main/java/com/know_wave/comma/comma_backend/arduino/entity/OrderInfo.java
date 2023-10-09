@@ -46,6 +46,9 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
     public boolean isCancellable() {
         return status == OrderStatus.APPLIED || status == OrderStatus.PREPARING;
     }
+    public boolean isNotOrderer(Account account) {
+        return !this.account.equals(account);
+    }
 
     public void setCancellationReason(String cancellationReason) {
         this.cancellationReason = cancellationReason;

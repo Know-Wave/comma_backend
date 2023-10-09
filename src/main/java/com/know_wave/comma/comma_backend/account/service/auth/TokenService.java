@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.account.service;
+package com.know_wave.comma.comma_backend.account.service.auth;
 
 import com.know_wave.comma.comma_backend.account.dto.TokenDto;
 import com.know_wave.comma.comma_backend.account.entity.Account;

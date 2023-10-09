@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.arduino.service;
+package com.know_wave.comma.comma_backend.arduino.service.normal;
 
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoDetailResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoResponse;
@@ -50,9 +50,8 @@ public class ArduinoService {
 
     public ArduinoDetailResponse getArduinoDetails(Long id, Pageable pageable) {
         Arduino arduino = getArduino(id);
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 
-        List<Comment> comments = commentRepository.findAllPagingByArduino(arduino, pageRequest);
+        List<Comment> comments = commentRepository.findAllPagingByArduino(arduino, pageable);
 
         return ArduinoDetailResponse.of(arduino, comments);
     }

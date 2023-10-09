@@ -1,14 +1,13 @@
-package com.know_wave.comma.comma_backend.arduino.service;
+package com.know_wave.comma.comma_backend.arduino.service.normal;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
-import com.know_wave.comma.comma_backend.account.service.AccountQueryService;
+import com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService;
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoReplyCommentResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.comment.CommentRequest;
 import com.know_wave.comma.comma_backend.arduino.dto.comment.ReplyCommentRequest;
 import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 import com.know_wave.comma.comma_backend.arduino.entity.Comment;
 import com.know_wave.comma.comma_backend.arduino.entity.Like;
-import com.know_wave.comma.comma_backend.arduino.repository.ArduinoRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.CommentRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.LikeRepository;
 import com.know_wave.comma.comma_backend.util.ValidateUtils;
@@ -22,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.know_wave.comma.comma_backend.account.service.AccountQueryService.getAuthenticatedId;
+import static com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService.getAuthenticatedId;
 import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
 
 @Service

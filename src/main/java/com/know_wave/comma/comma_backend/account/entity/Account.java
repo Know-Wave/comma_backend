@@ -184,4 +184,15 @@ public class Account extends BaseTimeEntity implements Persistable<String> {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Account &&
+                ((Account) obj).getId().equals(this.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

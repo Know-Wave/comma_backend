@@ -2,7 +2,7 @@ package com.know_wave.comma.comma_backend.security.filter;
 
 import com.know_wave.comma.comma_backend.account.dto.TokenDto;
 import com.know_wave.comma.comma_backend.account.entity.token.Token;
-import com.know_wave.comma.comma_backend.account.service.TokenService;
+import com.know_wave.comma.comma_backend.account.service.auth.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

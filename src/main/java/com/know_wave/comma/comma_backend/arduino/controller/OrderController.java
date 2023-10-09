@@ -1,10 +1,7 @@
 package com.know_wave.comma.comma_backend.arduino.controller;
 
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderCancelRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderDetailResponse;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponse;
-import com.know_wave.comma.comma_backend.arduino.service.OrderService;
+import com.know_wave.comma.comma_backend.arduino.dto.order.*;
+import com.know_wave.comma.comma_backend.arduino.service.normal.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +16,18 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/order/arduinos")
+    @PostMapping("/order/arduino")
     public String order(@Valid @RequestBody OrderRequest request) {
         orderService.order(request);
         return "Ordered";
+    }
+
+    @PostMapping("/orders/{orderCode}/arduinos/{arduinoId}")
+    public String addOrder(@PathVariable("orderCode") String orderCode,
+                           @PathVariable("arduinoId") Long id,
+                           @Valid @RequestBody OrderAdditionalRequest request) {
+//        orderService.addOrder(orderCode, id, request);
+        return "Added order";
     }
 
     @GetMapping("/orders")
@@ -30,14 +35,14 @@ public class OrderController {
         return orderService.getOrders();
     }
 
-    @GetMapping("/orders/{orderNumber}")
-    public OrderDetailResponse getOrderDetail(@PathVariable("orderNumber") String id) {
-        return orderService.getOrderDetail(id);
+    @GetMapping("/orders/{orderCode}")
+    public OrderDetailResponse getOrderDetail(@PathVariable("orderCode") String code) {
+        return orderService.getOrderDetail(code);
     }
 
-    @PatchMapping("/orders/{orderNumber}")
-    public String cancelOrderRequest(@PathVariable("orderNumber") String id, @Valid @RequestBody OrderCancelRequest request) {
-        orderService.cancelOrderRequest(id, request);
+    @PatchMapping("/orders/{orderCode}")
+    public String cancelOrderRequest(@PathVariable("orderCode") String code, @Valid @RequestBody OrderCancelRequest request) {
+        orderService.cancelOrderRequest(code, request);
         return "Requested order cancellation";
     }
 }

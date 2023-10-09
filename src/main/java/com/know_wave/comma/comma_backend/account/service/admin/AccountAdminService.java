@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.account.service;
+package com.know_wave.comma.comma_backend.account.service.admin;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
 import com.know_wave.comma.comma_backend.account.entity.auth.Role;

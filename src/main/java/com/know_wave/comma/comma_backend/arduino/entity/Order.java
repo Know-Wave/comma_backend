@@ -11,6 +11,12 @@ public class Order{
 
     protected Order() {}
 
+    public static List<Order> ofList(List<Basket> baskets, OrderInfo orderInfo) {
+        return baskets.stream()
+                .map(basket -> new Order(orderInfo, basket.getArduino(), basket.getArduinoCount()))
+                .toList();
+    }
+
     public Order(OrderInfo orderInfo, Arduino arduino, int count) {
         setOrderInfo(orderInfo);
         this.arduino = arduino;
@@ -31,12 +37,6 @@ public class Order{
     private OrderInfo orderInfo;
 
     private int count;
-
-    public static List<Order> ofList(List<Basket> baskets, OrderInfo orderInfo) {
-        return baskets.stream()
-                .map(basket -> new Order(orderInfo, basket.getArduino(), basket.getArduinoCount()))
-                .toList();
-    }
 
     public void setOrderInfo(OrderInfo orderInfo) {
         this.orderInfo = orderInfo;
