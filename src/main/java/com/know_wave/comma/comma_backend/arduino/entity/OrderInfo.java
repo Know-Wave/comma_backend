@@ -13,7 +13,7 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
 
     protected OrderInfo() {}
 
-    public OrderInfo(Account account, String orderNumber, String subject, String description) {
+    public OrderInfo(Account account, String orderNumber, Subject subject, String description) {
         this.account = account;
         this.orderNumber = orderNumber;
         this.subject = subject;
@@ -35,7 +35,10 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
 
     private String description;
 
-    private String subject;
+    private String cancellationReason;
+
+    @Enumerated(EnumType.STRING)
+    private Subject subject;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -44,6 +47,9 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
         return status == OrderStatus.APPLIED || status == OrderStatus.PREPARING;
     }
 
+    public void setCancellationReason(String cancellationReason) {
+        this.cancellationReason = cancellationReason;
+    }
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
@@ -61,7 +67,7 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
     }
 
     public String getSubject() {
-        return subject;
+        return subject.getSubjectName();
     }
 
     public OrderStatus getStatus() {
@@ -70,6 +76,9 @@ public class OrderInfo extends BaseTimeEntity implements Persistable<String> {
 
     public Account getAccount() {
         return account;
+    }
+    public String getCancellationReason() {
+        return cancellationReason;
     }
 
     @Override

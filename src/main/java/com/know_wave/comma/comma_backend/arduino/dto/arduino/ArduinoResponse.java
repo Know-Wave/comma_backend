@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.arduino.dto;
+package com.know_wave.comma.comma_backend.arduino.dto.arduino;
 
 import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 
@@ -6,10 +6,11 @@ import java.util.List;
 
 public class ArduinoResponse {
 
-    public ArduinoResponse(Long arduinoId, String arduinoName, int remainingCount, String arduinoDescription, List<String> arduinoCategories) {
+    public ArduinoResponse(Long arduinoId, String arduinoName, int remainingCount, int likeCount, String arduinoDescription, List<String> arduinoCategories) {
         this.arduinoId = arduinoId;
         this.arduinoName = arduinoName;
         this.remainingCount = remainingCount;
+        this.likeCount = likeCount;
         this.arduinoDescription = arduinoDescription;
         this.arduinoCategories = arduinoCategories;
     }
@@ -19,6 +20,7 @@ public class ArduinoResponse {
                 arduino.getId(),
                 arduino.getName(),
                 arduino.getCount(),
+                arduino.getLikeCount(),
                 arduino.getDescription(),
                 arduino.getCategories());
     }
@@ -28,6 +30,7 @@ public class ArduinoResponse {
     private final String arduinoName;
 
     private final int remainingCount;
+    private final int likeCount;
 
     private final String arduinoDescription;
 
@@ -43,6 +46,10 @@ public class ArduinoResponse {
 
     public int getRemainingCount() {
         return remainingCount;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
     }
 
     public String getArduinoDescription() {

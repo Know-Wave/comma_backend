@@ -1,16 +1,17 @@
-package com.know_wave.comma.comma_backend.arduino.dto;
+package com.know_wave.comma.comma_backend.arduino.dto.order;
 
 import java.time.LocalDateTime;
 
 public class OrderResponse {
 
-    public OrderResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject) {
+    public OrderResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject, String cancelReason) {
         this.accountId = accountId;
         this.orderDescription = orderDescription;
         this.orderDate = orderDate;
         this.orderStatus = orderStatus;
         this.orderCode = orderCode;
         this.subject = subject;
+        this.cancelReason = cancelReason;
     }
 
     private final String accountId;
@@ -19,6 +20,11 @@ public class OrderResponse {
     private final String orderStatus;
     private final String orderCode;
     private final String subject;
+    private final String cancelReason;
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
 
     public String getAccountId() {
         return accountId;

@@ -1,10 +1,12 @@
 package com.know_wave.comma.comma_backend.account.service;
 
-import com.know_wave.comma.comma_backend.account.dto.*;
+import com.know_wave.comma.comma_backend.account.dto.AccountCreateForm;
+import com.know_wave.comma.comma_backend.account.dto.AccountSignInForm;
+import com.know_wave.comma.comma_backend.account.dto.AdminCreateForm;
+import com.know_wave.comma.comma_backend.account.dto.TokenDto;
 import com.know_wave.comma.comma_backend.account.entity.AcademicMajor;
 import com.know_wave.comma.comma_backend.account.entity.AcademicStatus;
 import com.know_wave.comma.comma_backend.account.entity.Account;
-import com.know_wave.comma.comma_backend.account.entity.AccountEmailVerify;
 import com.know_wave.comma.comma_backend.account.entity.auth.Role;
 import com.know_wave.comma.comma_backend.account.entity.token.Token;
 import com.know_wave.comma.comma_backend.account.repository.AccountRepository;
@@ -12,10 +14,7 @@ import com.know_wave.comma.comma_backend.account.repository.AccountVerifyReposit
 import com.know_wave.comma.comma_backend.exception.EmailVerifiedException;
 import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
 import com.know_wave.comma.comma_backend.exception.TokenNotFound;
-import com.know_wave.comma.comma_backend.util.message.EmailSender;
-import com.know_wave.comma.comma_backend.util.GenerateCodeUtils;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -27,26 +26,25 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
-import static com.know_wave.comma.comma_backend.util.SecurityUtils.getAuthenticatedId;
 
 @Service
 @Transactional
-public class AccountService {
+public class SignService {
 
-    private final AccountRepository accountRepository;
     private final AccountVerifyRepository accountVerifyRepository;
-    private final EmailSender emailSender;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccountQueryService accountQueryService;
 
-    public AccountService(AccountRepository accountRepository, AccountVerifyRepository accountVerifyRepository, EmailSender emailSender, AuthenticationManager authenticationManager, TokenService tokenService, PasswordEncoder passwordEncoder) {
-        this.accountRepository = accountRepository;
+    public SignService(AccountVerifyRepository accountVerifyRepository, AuthenticationManager authenticationManager, TokenService tokenService, AccountRepository accountRepository, PasswordEncoder passwordEncoder, AccountQueryService accountQueryService) {
         this.accountVerifyRepository = accountVerifyRepository;
-        this.emailSender = emailSender;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
+        this.accountQueryService = accountQueryService;
     }
 
     public void join(AccountCreateForm form) {
@@ -71,56 +69,9 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public Account getOne(String id) {
-        return accountRepository.findById(id).orElseThrow(() -> new RuntimeException(NOT_EXIST_ACCOUNT));
-    }
-
-    public void send(String email) {
-
-        final int code = GenerateCodeUtils.getSixRandomCode();
-
-        accountVerifyRepository.findById(email).ifPresentOrElse(accountEmailVerify ->
-                {
-                    if (accountEmailVerify.isVerified()) {
-                        throw new EmailVerifiedException(ALREADY_VERIFIED_EMAIL);
-                    }
-
-                    accountEmailVerify.setCode(code);
-                    accountEmailVerify.sendCode(emailSender);
-                },
-                () -> {
-                    AccountEmailVerify account = new AccountEmailVerify(email, false, code);
-                    account.sendCode(emailSender);
-                    accountVerifyRepository.save(account);
-                });
-    }
-
-    public boolean verifyEmail(String email, int code) {
-        // 배열 자체에 대한 참조는 변하지 않음 (final)
-        final boolean[] result = {false};
-
-        accountVerifyRepository.findById(email).ifPresentOrElse(accountEmailVerify ->
-                {
-                    if (accountEmailVerify.isVerified()) {
-                        throw new EmailVerifiedException(ALREADY_VERIFIED_EMAIL);
-                    }
-
-                    if (accountEmailVerify.verifyCode(code)) {
-                        accountEmailVerify.setVerified(true);
-                        result[0] = true;
-                    }
-                },
-                ()-> {
-                    throw new NotFoundEmailException(NOT_FOUND_EMAIL);
-                });
-
-        return result[0];
-    }
-
-
     public Optional<TokenDto> processAuthentication(AccountSignInForm form) {
 
-        Account account = findAccount(form.getAccountId());
+        Account account = accountQueryService.findAccount(form.getAccountId());
 
         try {
             authenticationManager.authenticate(
@@ -161,47 +112,5 @@ public class AccountService {
         }
 
         throw new ExpiredJwtException(null, null, INVALID_TOKEN);
-    }
-
-    private Account findAccount(String accountId) {
-        return accountRepository.findById(accountId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(NOT_EXIST_ACCOUNT));
-    }
-
-    public AccountResponse getAccount() {
-        String accountId = getAuthenticatedId();
-        Account account = findAccount(accountId);
-
-        return new AccountResponse(
-                account.getId(),
-                account.getEmail(),
-                account.getAcademicNumber(),
-                account.getMajor().name(),
-                account.getAcademicStatus().getStatus(),
-                account.getRole().getGrade()
-        );
-    }
-
-    public boolean checkMatchPassword(String password) {
-        String accountId = getAuthenticatedId();
-        Account account = findAccount(accountId);
-
-        return passwordEncoder.matches(password, account.getPassword());
-    }
-
-    public void changePassword(String password) {
-        String accountId = getAuthenticatedId();
-        Account account = findAccount(accountId);
-
-        account.setPassword(passwordEncoder.encode(password));
-    }
-
-
-    public void deleteAccount() {
-        String accountId = getAuthenticatedId();
-        Account account = findAccount(accountId);
-
-        accountRepository.delete(account);
     }
 }

@@ -1,8 +1,9 @@
 package com.know_wave.comma.comma_backend.arduino.controller;
 
-import com.know_wave.comma.comma_backend.arduino.dto.OrderRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.OrderDetailResponse;
-import com.know_wave.comma.comma_backend.arduino.dto.OrderResponse;
+import com.know_wave.comma.comma_backend.arduino.dto.order.OrderCancelRequest;
+import com.know_wave.comma.comma_backend.arduino.dto.order.OrderRequest;
+import com.know_wave.comma.comma_backend.arduino.dto.order.OrderDetailResponse;
+import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponse;
 import com.know_wave.comma.comma_backend.arduino.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/account")
 public class OrderController {
 
     private final OrderService orderService;
@@ -19,7 +19,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/order")
+    @PostMapping("/order/arduinos")
     public String order(@Valid @RequestBody OrderRequest request) {
         orderService.order(request);
         return "Ordered";
@@ -36,8 +36,8 @@ public class OrderController {
     }
 
     @PatchMapping("/orders/{orderNumber}")
-    public String cancelOrderRequest(@PathVariable("orderNumber") String id) {
-        orderService.cancelOrderRequest(id);
+    public String cancelOrderRequest(@PathVariable("orderNumber") String id, @Valid @RequestBody OrderCancelRequest request) {
+        orderService.cancelOrderRequest(id, request);
         return "Requested order cancellation";
     }
 }

@@ -1,5 +1,6 @@
-package com.know_wave.comma.comma_backend.arduino.dto;
+package com.know_wave.comma.comma_backend.arduino.dto.arduino;
 
+import com.know_wave.comma.comma_backend.arduino.dto.category.CategoryIdDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

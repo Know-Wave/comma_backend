@@ -2,5 +2,8 @@ package com.know_wave.comma.comma_backend.util.entity;
 
 public enum ContentStatus {
 
-    PUBLIC, DELETED, GET_DELETED
+    CREATED,
+    UPDATED,
+    DELETED,
+    DELETE_BY_ADMIN,
 }

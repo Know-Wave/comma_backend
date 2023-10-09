@@ -1,20 +1,22 @@
-package com.know_wave.comma.comma_backend.arduino.dto;
+package com.know_wave.comma.comma_backend.arduino.dto.order;
 
+import com.know_wave.comma.comma_backend.arduino.entity.Subject;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class OrderRequest {
 
-    @NotEmpty(message = "{Required}")
-    private String subject;
+    @NotNull(message = "{Required}")
+    private Subject subject;
 
     @NotEmpty(message = "{Required}")
     private String description;
 
-    public String getSubject() {
+    public Subject getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public void setSubject(Subject subject) {
         this.subject = subject;
     }
 

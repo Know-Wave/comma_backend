@@ -1,6 +1,8 @@
 package com.know_wave.comma.comma_backend.arduino.service;
 
-import com.know_wave.comma.comma_backend.arduino.dto.*;
+import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoCreateForm;
+import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoCreateFormList;
+import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoUpdateRequest;
 import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 import com.know_wave.comma.comma_backend.arduino.entity.ArduinoCategory;
 import com.know_wave.comma.comma_backend.arduino.entity.Category;
@@ -45,7 +47,10 @@ public class ArduinoAdminService {
     public void updateCategory(Long id, String dest) {
 
         categoryCrudRepository.findById(id).ifPresentOrElse(category ->
-                category.setName(dest),
+                categoryCrudRepository.findByName(dest).ifPresentOrElse(findCategory ->
+                        {throw new EntityAlreadyExistException(ALREADY_EXIST_VALUE);},
+                        () -> category.setName(dest)
+                ),
                 () -> {throw new EntityNotFoundException(NOT_FOUND_VALUE);}
         );
     }

@@ -7,12 +7,5 @@ import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSou
 
 public class SecurityUtils {
 
-    public static String getAuthenticatedId() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if (name.isEmpty() || name.equals("anonymousUser")) {
-            throw new IllegalArgumentException(NOT_AUTHENTICATED_REQUEST);
-        }
-        return name;
-    }
 }

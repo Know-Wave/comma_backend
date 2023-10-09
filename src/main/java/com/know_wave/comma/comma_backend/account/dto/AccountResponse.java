@@ -1,16 +1,8 @@
 package com.know_wave.comma.comma_backend.account.dto;
 
+import com.know_wave.comma.comma_backend.account.entity.Account;
+
 public class AccountResponse {
-
-    private String name;
-    private String email;
-    private String academicNumber;
-    private String academicStatus;
-    private String academicMajor;
-    private String role;
-
-    public AccountResponse() {
-    }
 
     public AccountResponse(String name, String email, String academicNumber, String academicStatus, String academicMajor, String role) {
         this.name = name;
@@ -19,6 +11,28 @@ public class AccountResponse {
         this.academicStatus = academicStatus;
         this.academicMajor = academicMajor;
         this.role = role;
+    }
+    public static AccountResponse of(Account account) {
+        return new AccountResponse(
+                account.getName(),
+                account.getEmail(),
+                account.getAcademicNumber(),
+                account.getAcademicStatus(),
+                account.getAcademicMajor(),
+                account.getRole().getGrade()
+        );
+    }
+
+    private String name;
+    private String email;
+    private String academicNumber;
+    private String academicStatus;
+
+    private String academicMajor;
+
+    private String role;
+
+    public AccountResponse() {
     }
 
     public String getAcademicStatus() {

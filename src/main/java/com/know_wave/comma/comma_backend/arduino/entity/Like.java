@@ -7,6 +7,13 @@ import jakarta.persistence.*;
 @Table(name = "arduino_like")
 public class Like {
 
+    protected Like() {}
+
+    public Like(Account account, Arduino arduino) {
+        this.account = account;
+        this.arduino = arduino;
+    }
+
     @Id
     @GeneratedValue
     @Column(name = "arduino_like_id")
@@ -19,4 +26,18 @@ public class Like {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "arduino_id")
     private Arduino arduino;
+
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Like && ((Like) obj).getId().equals(this.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Arduino extends BaseTimeEntity {
@@ -36,14 +37,14 @@ public class Arduino extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy="arduino", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="arduino", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArduinoCategory> categories;
 
     @OneToMany(mappedBy = "arduino", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes;
+    private Set<Like> likes;
 
     @OneToMany(mappedBy = "arduino", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> itemComments;
+    private List<Comment> comments;
 
     public void update(String name, int count, int originalCount, String description) {
         this.name = name;
@@ -76,7 +77,22 @@ public class Arduino extends BaseTimeEntity {
         return description;
     }
 
+    public Set<Like> getLikes() {
+        return likes;
+    }
+
+    public int getLikeCount() {
+        return likes.size();
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
     public List<String> getCategories() {
-        return categories.stream().map(category -> category.getCategory().getName()).toList();
+        return categories.stream()
+                .map(category -> category.getCategory().getName())
+                .toList();
     }
 }
+

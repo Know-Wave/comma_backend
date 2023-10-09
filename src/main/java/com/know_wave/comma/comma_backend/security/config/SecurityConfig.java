@@ -80,7 +80,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeHttpRequest ->
                 authorizeHttpRequest
                         .requestMatchers(adminPermitRequestMatchers).permitAll()
-                        .requestMatchers("/admin/account/manager").hasRole(ADMIN.name())
+                        .requestMatchers("/admin/account/*").hasRole(ADMIN.name())
                         .requestMatchers("/admin/**").hasAnyRole(MANAGER.name(), ADMIN.name())
                         .requestMatchers(userPermitRequestMatchers).permitAll()
                         .requestMatchers("/**").authenticated()

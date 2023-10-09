@@ -1,17 +1,18 @@
-package com.know_wave.comma.comma_backend.arduino.dto;
+package com.know_wave.comma.comma_backend.arduino.dto.order;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderDetailResponse {
 
-    public OrderDetailResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject, List<Arduino> orderList) {
+    public OrderDetailResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject, String cancelReason, List<Arduino> orderList) {
         this.accountId = accountId;
         this.orderDescription = orderDescription;
         this.orderDate = orderDate;
         this.orderStatus = orderStatus;
         this.orderCode = orderCode;
         this.subject = subject;
+        this.cancelReason = cancelReason;
         this.orderList = orderList;
     }
 
@@ -21,6 +22,7 @@ public class OrderDetailResponse {
     private final String orderStatus;
     private final String orderCode;
     private final String subject;
+    private final String cancelReason;
     private final List<Arduino> orderList;
 
     public static class Arduino {
@@ -54,6 +56,9 @@ public class OrderDetailResponse {
         }
     }
 
+    public String getCancelReason() {
+        return cancelReason;
+    }
     public String getAccountId() {
         return accountId;
     }

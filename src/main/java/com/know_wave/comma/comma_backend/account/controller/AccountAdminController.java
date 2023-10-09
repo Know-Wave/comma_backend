@@ -3,8 +3,8 @@ package com.know_wave.comma.comma_backend.account.controller;
 import com.know_wave.comma.comma_backend.account.dto.AccountIdRequest;
 import com.know_wave.comma.comma_backend.account.dto.AdminCreateForm;
 import com.know_wave.comma.comma_backend.account.entity.auth.Role;
-import com.know_wave.comma.comma_backend.account.service.AccountService;
 import com.know_wave.comma.comma_backend.account.service.AccountAdminService;
+import com.know_wave.comma.comma_backend.account.service.SignService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class AccountAdminController {
 
     private final AccountAdminService accountAdminService;
-    private final AccountService accountService;
+    private final SignService signService;
 
-    public AccountAdminController(AccountAdminService accountAdminService, AccountService accountService) {
+    public AccountAdminController(AccountAdminService accountAdminService, SignService signService) {
         this.accountAdminService = accountAdminService;
-        this.accountService = accountService;
+        this.signService = signService;
     }
 
     @PostMapping("/manager")
@@ -59,7 +59,7 @@ public class AccountAdminController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUpManager(@RequestBody @Valid AdminCreateForm form) {
-        accountService.adminJoin(form);
+        signService.adminJoin(form);
         return new ResponseEntity<>("Created admin account", HttpStatus.CREATED);
     }
 }

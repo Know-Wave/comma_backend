@@ -1,6 +1,5 @@
 package com.know_wave.comma.comma_backend.account.entity;
 
-import com.know_wave.comma.comma_backend.arduino.entity.Order;
 import com.know_wave.comma.comma_backend.arduino.entity.OrderInfo;
 import com.know_wave.comma.comma_backend.util.entity.BaseTimeEntity;
 import com.know_wave.comma.comma_backend.account.entity.auth.Role;
@@ -17,24 +16,24 @@ public class Account extends BaseTimeEntity implements Persistable<String> {
 
     protected Account() {}
 
-    public Account(String id, String email, String name, String password, String academicNumber, AcademicMajor major, AcademicStatus academicStatus) {
+    public Account(String id, String email, String name, String password, String academicNumber, AcademicMajor academicMajor, AcademicStatus academicStatus) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.password = password;
         this.academicNumber = academicNumber;
-        this.major = major;
+        this.academicMajor = academicMajor;
         this.academicStatus = academicStatus;
         this.role = Role.MEMBER;
     }
 
-    public Account(String id, String email, String name, String password, String academicNumber, AcademicMajor major, AcademicStatus academicStatus, Role role) {
+    public Account(String id, String email, String name, String password, String academicNumber, AcademicMajor academicMajor, AcademicStatus academicStatus, Role role) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.password = password;
         this.academicNumber = academicNumber;
-        this.major = major;
+        this.academicMajor = academicMajor;
         this.academicStatus = academicStatus;
         this.role = role;
     }
@@ -57,7 +56,7 @@ public class Account extends BaseTimeEntity implements Persistable<String> {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AcademicMajor major;
+    private AcademicMajor academicMajor;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -162,12 +161,12 @@ public class Account extends BaseTimeEntity implements Persistable<String> {
         return academicNumber;
     }
 
-    public AcademicMajor getMajor() {
-        return major;
+    public String getAcademicMajor() {
+        return academicMajor.getMajor();
     }
 
-    public AcademicStatus getAcademicStatus() {
-        return academicStatus;
+    public String getAcademicStatus() {
+        return academicStatus.getStatus();
     }
 
     public Role getRole() {

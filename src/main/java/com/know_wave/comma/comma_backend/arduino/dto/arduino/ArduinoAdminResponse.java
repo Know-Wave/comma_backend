@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.arduino.dto;
+package com.know_wave.comma.comma_backend.arduino.dto.arduino;
 
 import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 

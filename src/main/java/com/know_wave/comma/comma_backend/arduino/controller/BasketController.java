@@ -1,11 +1,13 @@
 package com.know_wave.comma.comma_backend.arduino.controller;
 
-import com.know_wave.comma.comma_backend.arduino.dto.BasketDeleteRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.BasketRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.BasketResponse;
+import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketDeleteRequest;
+import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketRequest;
+import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketResponse;
 import com.know_wave.comma.comma_backend.arduino.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/basket")
@@ -18,7 +20,7 @@ public class BasketController {
     }
 
     @GetMapping
-    public BasketResponse getBasket() {
+    public List<BasketResponse> getBasket() {
         return orderService.getBasket();
     }
 
