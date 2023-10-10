@@ -1,6 +1,5 @@
 package com.know_wave.comma.comma_backend.arduino.service.admin;
 
-import com.know_wave.comma.comma_backend.account.entity.Account;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderDetailResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponseGroup;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -31,9 +29,9 @@ public class OrderAdminService {
         this.orderInfoRepository = orderInfoRepository;
     }
 
-    public List<OrderResponseGroup> getOrders(Pageable pageable) {
-        Page<OrderInfo> orderInfos = orderInfoRepository.findAllFetchAccount(pageable);
-        List<OrderInfo> relatedOrderInfo = orderInfoRepository.findAllByRelatedAccount(orderInfos.map(OrderInfo::getAccount).toSet());
+    public List<OrderResponseGroup> getApplyOrders(Pageable pageable) {
+        Page<OrderInfo> orderInfos = orderInfoRepository.findAllApplyFetchAccount(pageable);
+        List<OrderInfo> relatedOrderInfo = orderInfoRepository.findAllApplyByRelatedAccount(orderInfos.map(OrderInfo::getAccount).toSet());
 
         List<OrderResponse> orderResponses = orderInfos.stream().map(OrderResponse::of).toList();
         List<OrderResponse> relatedResponse = relatedOrderInfo.stream().map(OrderResponse::of).toList();

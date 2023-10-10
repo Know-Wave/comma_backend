@@ -17,8 +17,9 @@ public interface OrderInfoRepository extends CrudRepository<OrderInfo, String> {
 
     @Query("select oi " +
             "from OrderInfo oi " +
-            "where oi.account in :list")
-    List<OrderInfo> findAllByRelatedAccount(Set<Account> list);
+            "where oi.status = 'APLLIED' " +
+            "and oi.account in :list")
+    List<OrderInfo> findAllApplyByRelatedAccount(Set<Account> list);
 
     @Query("select oi " +
             "from OrderInfo oi " +
@@ -26,11 +27,12 @@ public interface OrderInfoRepository extends CrudRepository<OrderInfo, String> {
             "join fetch oo.arduino " +
             "where oi.orderNumber = :orderNumber")
     Optional<OrderInfo> findFetchById(String orderNumber);
-    // Queries in descending order of order creation date
 
+    // descending order of order creation date
     @Query("select oi " +
             "from OrderInfo oi " +
             "join fetch oi.account " +
+            "where oi.status = 'APLLIED' " +
             "order by oi.createdDate desc")
-    Page<OrderInfo> findAllFetchAccount(Pageable pageable);
+    Page<OrderInfo> findAllApplyFetchAccount(Pageable pageable);
 }
