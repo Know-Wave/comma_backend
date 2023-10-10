@@ -1,6 +1,7 @@
 package com.know_wave.comma.comma_backend.arduino.service.admin;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
+import com.know_wave.comma.comma_backend.account.entity.auth.Role;
 import com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderDetailResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponse;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService.getAuthenticatedId;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Service
@@ -107,7 +109,10 @@ public class OrderAdminService {
         if (orderInfo.getStatus().changeableTo(changedStatus)) {
             orderInfo.setStatus(changedStatus);
 
-            orderEmailService.sendOrderEmail(orderInfo);
+            Account account = accountQueryService.findAccount(getAuthenticatedId());
+            if (account.getRole() != Role.ADMIN) { // 관리자 계정은 이메일이 없으므로 메일 전송 X
+                orderEmailService.sendOrderEmail(orderInfo);
+            }
         } else {
             String message = OrderStatus.GET_ORDER_STATUS_MSG(orderInfo.getStatus());
             String message2 = OrderStatus.GET_IMMUTABLE_ORDER_STATUS_MSG(changedStatus);
