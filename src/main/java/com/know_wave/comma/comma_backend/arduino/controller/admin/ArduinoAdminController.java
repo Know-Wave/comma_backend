@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.arduino.controller;
+package com.know_wave.comma.comma_backend.arduino.controller.admin;
 
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoCreateForm;
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoCreateFormList;

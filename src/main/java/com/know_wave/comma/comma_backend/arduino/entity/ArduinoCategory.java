@@ -2,6 +2,10 @@ package com.know_wave.comma.comma_backend.arduino.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Entity
 public class ArduinoCategory {
 
@@ -23,6 +27,11 @@ public class ArduinoCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    public static Map<Arduino, List<ArduinoCategory>> groupingByArduino(List<ArduinoCategory> categories) {
+        return categories.stream()
+                .collect(Collectors.groupingBy(ArduinoCategory::getArduino));
+    }
 
     public Category getCategory() {
         return category;

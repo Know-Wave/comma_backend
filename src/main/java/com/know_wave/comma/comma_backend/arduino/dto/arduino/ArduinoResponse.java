@@ -6,13 +6,8 @@ import java.util.List;
 
 public class ArduinoResponse {
 
-    public ArduinoResponse(Long arduinoId, String arduinoName, int remainingCount, int likeCount, String arduinoDescription, List<String> arduinoCategories) {
-        this.arduinoId = arduinoId;
-        this.arduinoName = arduinoName;
-        this.remainingCount = remainingCount;
-        this.likeCount = likeCount;
-        this.arduinoDescription = arduinoDescription;
-        this.arduinoCategories = arduinoCategories;
+    public static List<ArduinoResponse> ofList(List<Arduino> arduinos) {
+        return arduinos.stream().map(ArduinoResponse::of).toList();
     }
 
     public static ArduinoResponse of(Arduino arduino) {
@@ -23,6 +18,26 @@ public class ArduinoResponse {
                 arduino.getLikeCount(),
                 arduino.getDescription(),
                 arduino.getCategories());
+    }
+
+    public static ArduinoResponse ofWithoutLike(Arduino arduino) {
+        return new ArduinoResponse(
+                arduino.getId(),
+                arduino.getName(),
+                arduino.getCount(),
+                0,
+                arduino.getDescription(),
+                arduino.getCategories()
+        );
+    }
+
+    private ArduinoResponse(Long arduinoId, String arduinoName, int remainingCount, int likeCount, String arduinoDescription, List<String> arduinoCategories) {
+        this.arduinoId = arduinoId;
+        this.arduinoName = arduinoName;
+        this.remainingCount = remainingCount;
+        this.likeCount = likeCount;
+        this.arduinoDescription = arduinoDescription;
+        this.arduinoCategories = arduinoCategories;
     }
 
     private final Long arduinoId;

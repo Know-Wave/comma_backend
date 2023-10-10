@@ -46,6 +46,10 @@ public class Arduino extends BaseTimeEntity {
     @OneToMany(mappedBy = "arduino", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
+    public boolean isNotEnoughCount(int orderCount) {
+        return count < orderCount;
+    }
+
     public void update(String name, int count, int originalCount, String description) {
         this.name = name;
         this.count = count;

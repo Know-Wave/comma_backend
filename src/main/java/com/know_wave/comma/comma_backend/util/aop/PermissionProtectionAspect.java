@@ -17,7 +17,7 @@ public class PermissionProtectionAspect {
     @Before("@annotation(com.know_wave.comma.comma_backend.util.annotation.PermissionProtection)")
     public void checkPermission() throws AccessDeniedException {
         if (!requestHasPermission()) {
-            throw new AuthorizationServiceException(PERMISSION_DENIED);
+            throw new AccessDeniedException(PERMISSION_DENIED);
         }
     }
 

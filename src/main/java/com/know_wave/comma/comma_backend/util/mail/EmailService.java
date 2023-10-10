@@ -1,16 +1,14 @@
-package com.know_wave.comma.comma_backend.account.service.normal;
+package com.know_wave.comma.comma_backend.util.mail;
 
 import com.know_wave.comma.comma_backend.account.entity.AccountEmailVerify;
 import com.know_wave.comma.comma_backend.account.repository.AccountVerifyRepository;
 import com.know_wave.comma.comma_backend.exception.EmailVerifiedException;
 import com.know_wave.comma.comma_backend.exception.NotFoundEmailException;
-import com.know_wave.comma.comma_backend.util.GenerateCodeUtils;
-import com.know_wave.comma.comma_backend.util.message.EmailSender;
+import com.know_wave.comma.comma_backend.util.GenerateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.ALREADY_VERIFIED_EMAIL;
-import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.NOT_FOUND_EMAIL;
+import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
 
 @Service
 @Transactional
@@ -18,15 +16,23 @@ public class EmailService {
 
     private final AccountVerifyRepository accountVerifyRepository;
     private final EmailSender emailSender;
+    public static final String AUTH_CODE_TITLE = "컴마 인증 코드";
 
     public EmailService(AccountVerifyRepository accountVerifyRepository, EmailSender emailSender) {
         this.accountVerifyRepository = accountVerifyRepository;
         this.emailSender = emailSender;
     }
 
+    public void send(String receiveEmail, String title, String text) {
+        if (receiveEmail.isEmpty() || title.isEmpty() || text.isEmpty()) {
+            throw new IllegalArgumentException(UNABLE_SEND_EMAIL);
+        }
+        emailSender.send(receiveEmail, title, text);
+    }
+
     public void sendAuthCode(String email) {
 
-        final int code = GenerateCodeUtils.getSixRandomCode();
+        final int code = GenerateUtils.generateSixRandomCode();
 
         accountVerifyRepository.findById(email).ifPresentOrElse(accountEmailVerify ->
                 {
@@ -35,12 +41,12 @@ public class EmailService {
                     }
 
                     accountEmailVerify.setCode(code);
-                    accountEmailVerify.sendCode(emailSender);
+                    emailSender.send(email, AUTH_CODE_TITLE, String.valueOf(code));
                 },
                 () -> {
                     AccountEmailVerify emailVerify = new AccountEmailVerify(email, false, code);
-                    emailVerify.sendCode(emailSender);
                     accountVerifyRepository.save(emailVerify);
+                    emailSender.send(email, AUTH_CODE_TITLE, String.valueOf(code));
                 });
     }
 

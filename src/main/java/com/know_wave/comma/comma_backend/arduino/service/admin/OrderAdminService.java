@@ -1,13 +1,16 @@
 package com.know_wave.comma.comma_backend.arduino.service.admin;
 
+import com.know_wave.comma.comma_backend.account.entity.Account;
+import com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderDetailResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponse;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponseGroup;
-import com.know_wave.comma.comma_backend.arduino.entity.OrderInfo;
+import com.know_wave.comma.comma_backend.arduino.entity.*;
 import com.know_wave.comma.comma_backend.arduino.repository.OrderInfoRepository;
-import com.know_wave.comma.comma_backend.arduino.repository.OrderRepository;
+import com.know_wave.comma.comma_backend.arduino.service.normal.ArduinoService;
+import com.know_wave.comma.comma_backend.arduino.service.normal.OrderEmailService;
+import com.know_wave.comma.comma_backend.arduino.service.normal.OrderService;
+import com.know_wave.comma.comma_backend.util.ValidateUtils;
 import com.know_wave.comma.comma_backend.util.annotation.PermissionProtection;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,55 +19,103 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 @Service
 @Transactional
 @PermissionProtection
 public class OrderAdminService {
 
-    private final OrderRepository orderRepository;
+    private final OrderEmailService orderEmailService;
+    private final OrderService orderService;
+    private final ArduinoService arduinoService;
+    private final AccountQueryService accountQueryService;
     private final OrderInfoRepository orderInfoRepository;
 
-    public OrderAdminService(OrderRepository orderRepository, OrderInfoRepository orderInfoRepository) {
-        this.orderRepository = orderRepository;
+    public OrderAdminService(OrderEmailService orderEmailService, OrderService orderService, ArduinoService arduinoService, AccountQueryService accountQueryService, OrderInfoRepository orderInfoRepository) {
+        this.orderEmailService = orderEmailService;
+        this.orderService = orderService;
+        this.arduinoService = arduinoService;
+        this.accountQueryService = accountQueryService;
         this.orderInfoRepository = orderInfoRepository;
     }
 
-    public List<OrderResponseGroup> getApplyOrders(Pageable pageable) {
-        Page<OrderInfo> orderInfos = orderInfoRepository.findAllApplyFetchAccount(pageable);
-        List<OrderInfo> relatedOrderInfo = orderInfoRepository.findAllApplyByRelatedAccount(orderInfos.map(OrderInfo::getAccount).toSet());
+    public List<OrderResponse> getOrders(Pageable pageable) {
+        List<OrderInfo> orderInfos = orderInfoRepository.findAllOrderByCreateDate(pageable);
 
-        List<OrderResponse> orderResponses = orderInfos.stream().map(OrderResponse::of).toList();
-        List<OrderResponse> relatedResponse = relatedOrderInfo.stream().map(OrderResponse::of).toList();
+        ValidateUtils.throwIfEmpty(orderInfos);
 
-        List<OrderResponse> mergedResponse = Stream.concat(orderResponses.stream(), relatedResponse.stream()).toList();
-
-        Map<String, List<OrderResponse>> groupedOrderResponses = OrderResponse.groupingOrderByAccountId(mergedResponse);
-
-        return OrderResponseGroup.ofList(groupedOrderResponses);
+        return OrderResponse.ofList(orderInfos);
     }
 
-    public OrderDetailResponse getOrderDetail() {
+    public List<List<OrderResponse>> getApplyOrders(Pageable pageable) {
 
+    List<OrderResponse> mergedResponse;
+
+    List<OrderInfo> orderInfos = orderInfoRepository.findAllApplyStatus(pageable);
+
+    ValidateUtils.throwIfEmpty(orderInfos);
+
+    List<OrderInfo> relatedOrderInfo = orderInfoRepository.findAllApplyStatusByRelatedAccount(
+            orderInfos.stream().map(OrderInfo::getAccount).collect(toUnmodifiableSet()),
+            orderInfos.stream().map(OrderInfo::getOrderNumber).toList()
+    );
+
+    List<OrderResponse> orderResponses = orderInfos.stream().map(OrderResponse::of).toList();
+    List<OrderResponse> relatedResponse = relatedOrderInfo.stream().map(OrderResponse::of).toList();
+
+    if (relatedResponse.isEmpty()) {
+        mergedResponse = orderResponses;
+    } else {
+        mergedResponse = Stream.concat(orderResponses.stream(), relatedResponse.stream()).toList();
     }
 
-    public List<OrderResponse> getOrdersByAccount() {
+    Map<String, List<OrderResponse>> groupedOrderResponses = OrderResponse.groupingOrderByAccountId(mergedResponse);
 
+    return OrderResponse.ofGroupList(groupedOrderResponses);
     }
 
-    public OrderDetailResponse getOrderDetailByAccount() {
+    public OrderDetailResponse getOrderDetailByOrderNumber(String orderNumber) {
+        OrderInfo orderInfo = orderService.getOrderInfoById(orderNumber);
 
+        List<ArduinoCategory> arduinoCategories = arduinoService.getArduinoCategoreisByArduinos(
+                orderInfo.getOrders().stream().map(Order::getArduino).toList());
+
+        Map<Arduino, List<ArduinoCategory>> arduinoCategoryMap = ArduinoCategory.groupingByArduino(arduinoCategories);
+
+        return OrderDetailResponse.of(orderInfo, arduinoCategoryMap);
     }
 
-    public List<OrderResponse> getCancelRequestOrders() {
+    public List<OrderResponse> getOrdersByAccountId(String accountId) {
+        Account account = accountQueryService.findAccount(accountId);
+        List<OrderInfo> userOrderInfos = orderService.getOrderInfosByAccount(account);
 
+        return OrderResponse.ofList(userOrderInfos);
     }
 
-    public void changeOrderStatus() {
+    public List<OrderResponse> getCancelRequestOrders(Pageable pageable) {
+        List<OrderInfo> cancelRequestOrderInfos = orderInfoRepository.findAllCancelRequestStatus(pageable);
 
+        ValidateUtils.throwIfEmpty(cancelRequestOrderInfos);
+
+        return OrderResponse.ofList(cancelRequestOrderInfos);
     }
 
-    public void changeOrdersStatus() {
+    public void changeOrderStatus(String orderNumber, OrderStatus changedStatus) {
+        OrderInfo orderInfo = orderService.getOrderInfoById(orderNumber);
 
+        if (orderInfo.getStatus().changeableTo(changedStatus)) {
+            orderInfo.setStatus(changedStatus);
+
+            orderEmailService.sendOrderEmail(orderInfo);
+        } else {
+            String message = OrderStatus.GET_ORDER_STATUS_MSG(orderInfo.getStatus());
+            String message2 = OrderStatus.GET_IMMUTABLE_ORDER_STATUS_MSG(changedStatus);
+            throw new IllegalArgumentException(message + " " + message2 + " (주문번호 : " + orderNumber + ")");
+        }
     }
 
+    public void changeOrdersStatus(List<String> OrderNumbers, OrderStatus changedStatus) {
+        OrderNumbers.forEach(orderNumber -> changeOrderStatus(orderNumber, changedStatus));
+    }
 }

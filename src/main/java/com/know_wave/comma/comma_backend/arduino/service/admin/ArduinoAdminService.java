@@ -26,13 +26,11 @@ public class ArduinoAdminService {
     private final ArduinoRepository arduinoRepository;
     private final CategoryCrudRepository categoryCrudRepository;
     private final ArduinoCategoryRepository arduinoCategoryRepository;
-    private final OrderRepository orderRepository;
 
-    public ArduinoAdminService(ArduinoRepository arduinoRepository, CategoryCrudRepository categoryCrudRepository, ArduinoCategoryRepository arduinoCategoryRepository, OrderRepository orderRepository) {
+    public ArduinoAdminService(ArduinoRepository arduinoRepository, CategoryCrudRepository categoryCrudRepository, ArduinoCategoryRepository arduinoCategoryRepository) {
         this.arduinoRepository = arduinoRepository;
         this.categoryCrudRepository = categoryCrudRepository;
         this.arduinoCategoryRepository = arduinoCategoryRepository;
-        this.orderRepository = orderRepository;
     }
 
     public void registerCategory(String categoryName) {
@@ -100,7 +98,7 @@ public class ArduinoAdminService {
 
                 RequestCategories.forEach(requestCategory -> {
                             if (OwnCategories.stream()
-                                    .noneMatch(ownCategory -> ownCategory.getCategory().getId() == requestCategory.getId())) {
+                                    .noneMatch(ownCategory -> ownCategory.getCategory().getId().equals(requestCategory.getId()))) {
                                 arduinoCategoryRepository.save(new ArduinoCategory(arduino, requestCategory));
                             }
                         }

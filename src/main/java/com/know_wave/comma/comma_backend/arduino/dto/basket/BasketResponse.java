@@ -1,7 +1,6 @@
 package com.know_wave.comma.comma_backend.arduino.dto.basket;
 
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoResponse;
-import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
 import com.know_wave.comma.comma_backend.arduino.entity.Basket;
 
 import java.util.List;
@@ -12,11 +11,11 @@ public class BasketResponse {
 
         return arduinoInFromBasket
                 .stream()
-                .map(basket -> new BasketResponse(ArduinoResponse.of(basket.getArduino()), basket.getArduinoCount()))
+                .map(basket -> new BasketResponse(ArduinoResponse.ofWithoutLike(basket.getArduino()), basket.getStoredArduinoCount()))
                 .toList();
     }
 
-    public BasketResponse(ArduinoResponse arduino, int containedCount) {
+    private BasketResponse(ArduinoResponse arduino, int containedCount) {
         this.arduino = arduino;
         ContainedCount = containedCount;
     }

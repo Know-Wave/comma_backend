@@ -9,8 +9,10 @@ import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSou
 
 public class ValidateUtils {
 
-    public static void throwIfEmpty(Collection<?> collection) {
-        Assert.notEmpty(collection, NOT_FOUND_VALUE);
+    public static void throwIfEmpty(Iterable<?> iterable) {
+        if (!iterable.iterator().hasNext()) {
+            throw new IllegalArgumentException(NOT_FOUND_VALUE);
+        }
     }
 
     public static void throwIfOptionalEmpty(Optional<?> Optional) {

@@ -2,37 +2,51 @@ package com.know_wave.comma.comma_backend.arduino.repository;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
 import com.know_wave.comma.comma_backend.arduino.entity.OrderInfo;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface OrderInfoRepository extends CrudRepository<OrderInfo, String> {
+// descending order of order creation date (asc)
+public interface OrderInfoRepository extends JpaRepository<OrderInfo, String> {
 
     List<OrderInfo> findAllByAccount(Account account);
 
     @Query("select oi " +
             "from OrderInfo oi " +
-            "where oi.status = 'APLLIED' " +
-            "and oi.account in :list")
-    List<OrderInfo> findAllApplyByRelatedAccount(Set<Account> list);
+            "join fetch oi.account " +
+            "where oi.status = 'APPLIED' " +
+            "order by oi.createdDate")
+    List<OrderInfo> findAllApplyStatus(Pageable pageable);
+
+    @Query("select oi " +
+            "from OrderInfo oi " +
+            "where oi.status = 'APPLIED' " +
+            "and oi.account in :list " +
+            "and oi.orderNumber not in :orderNumbers ")
+    List<OrderInfo> findAllApplyStatusByRelatedAccount(Set<Account> list, List<String> orderNumbers);
 
     @Query("select oi " +
             "from OrderInfo oi " +
             "join fetch oi.orders oo " +
+            "join fetch oi.account " +
             "join fetch oo.arduino " +
             "where oi.orderNumber = :orderNumber")
     Optional<OrderInfo> findFetchById(String orderNumber);
 
-    // descending order of order creation date
     @Query("select oi " +
             "from OrderInfo oi " +
             "join fetch oi.account " +
-            "where oi.status = 'APLLIED' " +
-            "order by oi.createdDate desc")
-    Page<OrderInfo> findAllApplyFetchAccount(Pageable pageable);
+            "where oi.status = 'CANCELLATION_REQUEST' " +
+            "order by oi.createdDate")
+    List<OrderInfo> findAllCancelRequestStatus(Pageable pageable);
+
+    @Query("select oi " +
+            "from OrderInfo oi " +
+            "join fetch oi.account " +
+            "order by oi.createdDate")
+    List<OrderInfo> findAllOrderByCreateDate(Pageable pageable);
 }

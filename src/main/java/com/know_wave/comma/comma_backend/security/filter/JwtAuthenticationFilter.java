@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Optional<TokenDto> tokenDtoOptional = tokenService.mapToTokenDto(request);
         if (tokenDtoOptional.isEmpty()) {
-            sendErrorResponse(response, PERMISSION_DENIED);
+            sendErrorResponse(response, INVALID_TOKEN);
             return;
         }
 

@@ -1,19 +1,19 @@
-package com.know_wave.comma.comma_backend.arduino.dto.basket;
+package com.know_wave.comma.comma_backend.arduino.dto.order;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public class BasketRequest {
+public class OrderMoreRequest {
 
     @NotNull(message = "{Required}")
     @Min(value = 1, message = "{NotAcceptable.range}")
     private Long arduinoId;
-
     @NotNull(message = "{Required}")
     @Min(value = 1, message = "{NotAcceptable.range}")
     @Max(value = 10, message = "{NotAcceptable.range}")
-    private int containedCount;
+    private int orderCount;
+
 
     public Long getArduinoId() {
         return arduinoId;
@@ -23,12 +23,11 @@ public class BasketRequest {
         this.arduinoId = arduinoId;
     }
 
-
-    public int getContainedCount() {
-        return containedCount;
+    public int getOrderCount() {
+        return orderCount;
     }
 
-    public void setContainedCount(int containedCount) {
-        this.containedCount = containedCount;
+    public void setOrderCount(int orderCount) {
+        this.orderCount = orderCount;
     }
 }

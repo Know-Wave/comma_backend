@@ -1,11 +1,31 @@
 package com.know_wave.comma.comma_backend.arduino.dto.order;
 
+import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
+import com.know_wave.comma.comma_backend.arduino.entity.ArduinoCategory;
+import com.know_wave.comma.comma_backend.arduino.entity.OrderInfo;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDetailResponse {
 
-    public OrderDetailResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject, String cancelReason, List<Arduino> orderList) {
+    public static OrderDetailResponse of(OrderInfo orderInfo, Map<Arduino, List<ArduinoCategory>> categoryMap) {
+        return new OrderDetailResponse(
+                orderInfo.getId(),
+                orderInfo.getDescription(),
+                orderInfo.getCreatedDate(),
+                orderInfo.getStatus().getValue(),
+                orderInfo.getOrderNumber(),
+                orderInfo.getSubject(),
+                orderInfo.getCancellationReason(),
+                orderInfo.getOrders().stream()
+                        .map(order -> OrderArduino.of(order, categoryMap))
+                        .toList()
+        );
+    }
+
+    private OrderDetailResponse(String accountId, String orderDescription, LocalDateTime orderDate, String orderStatus, String orderCode, String subject, String cancelReason, List<OrderArduino> orderList) {
         this.accountId = accountId;
         this.orderDescription = orderDescription;
         this.orderDate = orderDate;
@@ -23,38 +43,7 @@ public class OrderDetailResponse {
     private final String orderCode;
     private final String subject;
     private final String cancelReason;
-    private final List<Arduino> orderList;
-
-    public static class Arduino {
-
-        public Arduino(Long arduinoId, String arduinoName, int orderCount, List<String> category) {
-            this.arduinoId = arduinoId;
-            this.arduinoName = arduinoName;
-            this.orderCount = orderCount;
-            this.category = category;
-        }
-
-        private final Long arduinoId;
-        private final String arduinoName;
-        private final int orderCount;
-        private final List<String> category;
-
-        public Long getArduinoId() {
-            return arduinoId;
-        }
-
-        public String getArduinoName() {
-            return arduinoName;
-        }
-
-        public int getOrderCount() {
-            return orderCount;
-        }
-
-        public List<String> getCategory() {
-            return category;
-        }
-    }
+    private final List<OrderArduino> orderList;
 
     public String getCancelReason() {
         return cancelReason;
@@ -83,7 +72,7 @@ public class OrderDetailResponse {
         return subject;
     }
 
-    public List<Arduino> getOrderList() {
+    public List<OrderArduino> getOrderList() {
         return orderList;
     }
 }

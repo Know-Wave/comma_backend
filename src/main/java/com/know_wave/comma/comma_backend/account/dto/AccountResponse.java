@@ -4,14 +4,6 @@ import com.know_wave.comma.comma_backend.account.entity.Account;
 
 public class AccountResponse {
 
-    public AccountResponse(String name, String email, String academicNumber, String academicStatus, String academicMajor, String role) {
-        this.name = name;
-        this.email = email;
-        this.academicNumber = academicNumber;
-        this.academicStatus = academicStatus;
-        this.academicMajor = academicMajor;
-        this.role = role;
-    }
     public static AccountResponse of(Account account) {
         return new AccountResponse(
                 account.getName(),
@@ -22,6 +14,14 @@ public class AccountResponse {
                 account.getRole().getGrade()
         );
     }
+    private AccountResponse(String name, String email, String academicNumber, String academicStatus, String academicMajor, String permission) {
+        this.name = name;
+        this.email = email;
+        this.academicNumber = academicNumber;
+        this.academicStatus = academicStatus;
+        this.academicMajor = academicMajor;
+        this.permission = permission;
+    }
 
     private String name;
     private String email;
@@ -30,7 +30,7 @@ public class AccountResponse {
 
     private String academicMajor;
 
-    private String role;
+    private String permission;
 
     public AccountResponse() {
     }
@@ -75,11 +75,11 @@ public class AccountResponse {
         this.academicMajor = academicMajor;
     }
 
-    public String getRole() {
-        return role;
+    public String getPermission() {
+        return permission;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setPermission(String permission) {
+        this.permission = permission;
     }
 }

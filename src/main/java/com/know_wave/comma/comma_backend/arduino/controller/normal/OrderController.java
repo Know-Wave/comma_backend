@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.arduino.controller;
+package com.know_wave.comma.comma_backend.arduino.controller.normal;
 
 import com.know_wave.comma.comma_backend.arduino.dto.order.*;
 import com.know_wave.comma.comma_backend.arduino.service.normal.OrderService;
@@ -22,11 +22,10 @@ public class OrderController {
         return "Ordered";
     }
 
-    @PostMapping("/orders/{orderCode}/arduinos/{arduinoId}")
+    @PostMapping("/orders/{orderCode}/arduino")
     public String addOrder(@PathVariable("orderCode") String orderCode,
-                           @PathVariable("arduinoId") Long id,
-                           @Valid @RequestBody OrderAdditionalRequest request) {
-//        orderService.addOrder(orderCode, id, request);
+                           @Valid @RequestBody OrderMoreRequest request) {
+        orderService.moreOrder(orderCode, request);
         return "Added order";
     }
 
@@ -40,7 +39,7 @@ public class OrderController {
         return orderService.getOrderDetail(code);
     }
 
-    @PatchMapping("/orders/{orderCode}")
+    @PatchMapping("/orders/{orderCode}/cancel_request")
     public String cancelOrderRequest(@PathVariable("orderCode") String code, @Valid @RequestBody OrderCancelRequest request) {
         orderService.cancelOrderRequest(code, request);
         return "Requested order cancellation";

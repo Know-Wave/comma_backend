@@ -12,10 +12,10 @@ public class Basket {
 
     protected Basket() {}
 
-    public Basket(Account account, Arduino arduino, int arduinoCount) {
+    public Basket(Account account, Arduino arduino, int storedArduinoCount) {
         this.account = account;
         this.arduino = arduino;
-        this.arduinoCount = arduinoCount;
+        this.storedArduinoCount = storedArduinoCount;
     }
 
     @Id
@@ -33,21 +33,18 @@ public class Basket {
 
     @Min(0)
     @Max(value = 10, message = "최대 10개까지 담을 수 있습니다.")
-    private int arduinoCount;
+    private int storedArduinoCount;
 
-    public static boolean isOverRequest(int orderCount, int leftCount) {
-        return orderCount > leftCount;
-    }
 
     public static boolean isOverRequest(List<Basket> baskets) {
         return baskets.stream()
                 .anyMatch(basket ->
-                        isOverRequest(basket.getArduinoCount(), basket.getArduino().getCount()));
+                        basket.getArduino().isNotEnoughCount(basket.getStoredArduinoCount()));
     }
 
     public static List<Order> toOrders(List<Basket> baskets, OrderInfo orderInfo) {
         return baskets.stream()
-                .map(basket -> new Order(orderInfo, basket.getArduino(), basket.getArduinoCount()))
+                .map(basket -> Order.of(orderInfo, basket.getArduino(), basket.getStoredArduinoCount()))
                 .toList();
     }
 
@@ -59,11 +56,11 @@ public class Basket {
         return arduino;
     }
 
-    public int getArduinoCount() {
-        return arduinoCount;
+    public int getStoredArduinoCount() {
+        return storedArduinoCount;
     }
 
-    public void setArduinoCount(int count) {
-        this.arduinoCount = count;
+    public void setStoredArduinoCount(int count) {
+        this.storedArduinoCount = count;
     }
 }

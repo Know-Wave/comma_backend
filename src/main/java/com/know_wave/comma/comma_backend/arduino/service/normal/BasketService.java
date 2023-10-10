@@ -36,7 +36,7 @@ public class BasketService {
     public List<BasketResponse> getBasket() {
 
         Account account = accountQueryService.findAccount(getAuthenticatedId());
-        List<Basket> baskets = getBasketsFetchArduino(account);
+        List<Basket> baskets = getBasketsByAccount(account);
 
         ValidateUtils.throwIfEmpty(baskets);
 
@@ -48,9 +48,9 @@ public class BasketService {
         Account account = accountQueryService.findAccount(getAuthenticatedId());
         Arduino arduino = arduinoService.getArduino(request.getArduinoId());
 
-        int orderCount = request.getCount();
+        int orderCount = request.getContainedCount();
 
-        if (Basket.isOverRequest(orderCount, arduino.getCount())) {
+        if (arduino.isNotEnoughCount(orderCount)) {
             throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
         }
 
@@ -75,32 +75,24 @@ public class BasketService {
         Account account = accountQueryService.findAccount(getAuthenticatedId());
         Arduino arduino = arduinoService.getArduino(request.getArduinoId());
 
-        if (Basket.isOverRequest(request.getCount(), arduino.getCount())) {
+        if (arduino.isNotEnoughCount(request.getContainedCount())) {
             throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
         }
 
         basketRepository.findByAccountAndArduino(account, arduino)
                 .ifPresentOrElse(basket ->
-                                basket.setArduinoCount(request.getCount()),
+                                basket.setStoredArduinoCount(request.getContainedCount()),
                         () -> {throw new EntityNotFoundException(NOT_FOUND_VALUE);});
     }
 
     public void emptyBasket() {
         Account account = accountQueryService.findAccount(getAuthenticatedId());
-        List<Basket> basket = getBaskets(account);
+        List<Basket> basket = getBasketsByAccount(account);
 
         basketRepository.deleteAll(basket);
     }
 
-    private List<Basket> getBaskets(Account account) {
-        List<Basket> arduinoList = basketRepository.findAllByAccount(account);
-
-        ValidateUtils.throwIfEmpty(arduinoList);
-
-        return arduinoList;
-    }
-
-    public List<Basket> getBasketsFetchArduino(Account account) {
+    public List<Basket> getBasketsByAccount(Account account) {
         List<Basket> arduinoList = basketRepository.findAllFetchArduinoByAccount(account);
 
         ValidateUtils.throwIfEmpty(arduinoList);

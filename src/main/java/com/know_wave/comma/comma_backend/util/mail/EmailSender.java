@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.util.message;
+package com.know_wave.comma.comma_backend.util.mail;
 
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.SimpleMailMessage;
@@ -16,10 +16,10 @@ public class EmailSender {
         this.mailSender = mailSender;
     }
 
-    public void send(String email, String subject, String text) {
+    public void send(String receiveEmail, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(properties.getUsername());
-        message.setTo(email);
+        message.setTo(receiveEmail);
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);

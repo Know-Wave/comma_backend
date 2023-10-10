@@ -4,8 +4,10 @@ import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoDetailRespon
 import com.know_wave.comma.comma_backend.arduino.dto.arduino.ArduinoResponse;
 import com.know_wave.comma.comma_backend.arduino.dto.category.CategoryDto;
 import com.know_wave.comma.comma_backend.arduino.entity.Arduino;
+import com.know_wave.comma.comma_backend.arduino.entity.ArduinoCategory;
 import com.know_wave.comma.comma_backend.arduino.entity.Category;
 import com.know_wave.comma.comma_backend.arduino.entity.Comment;
+import com.know_wave.comma.comma_backend.arduino.repository.ArduinoCategoryRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.ArduinoRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.CategoryCrudRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.CommentRepository;
@@ -27,11 +29,13 @@ public class ArduinoService {
 
     private final ArduinoRepository arduinoRepository;
     private final CategoryCrudRepository categoryRepository;
+    private final ArduinoCategoryRepository arduinoCategoryRepository;
     private final CommentRepository commentRepository;
 
-    public ArduinoService(ArduinoRepository arduinoRepository, CategoryCrudRepository categoryRepository, CommentRepository commentRepository) {
+    public ArduinoService(ArduinoRepository arduinoRepository, CategoryCrudRepository categoryRepository, ArduinoCategoryRepository arduinoCategoryRepository, CommentRepository commentRepository) {
         this.arduinoRepository = arduinoRepository;
         this.categoryRepository = categoryRepository;
+        this.arduinoCategoryRepository = arduinoCategoryRepository;
         this.commentRepository = commentRepository;
     }
 
@@ -77,5 +81,13 @@ public class ArduinoService {
         ValidateUtils.throwIfOptionalEmpty(arduinoOptional);
 
         return arduinoOptional.get();
+    }
+
+    public List<ArduinoCategory> getArduinoCategoreisByArduinos(List<Arduino> arduinos) {
+        List<ArduinoCategory> arduinoCategories = arduinoCategoryRepository.findALlFetchByArduinos(arduinos);
+
+        ValidateUtils.throwIfEmpty(arduinoCategories);
+
+        return arduinoCategories;
     }
 }

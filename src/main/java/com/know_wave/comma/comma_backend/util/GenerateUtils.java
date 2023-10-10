@@ -5,16 +5,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class GenerateCodeUtils {
+public class GenerateUtils {
 
-    public static int getSixRandomCode() {
+    public static int generateSixRandomCode() {
         return ThreadLocalRandom.current().nextInt(888888) + 111111;
     }
 
-    public static String getCodeWithDate() {
-        String uuid = UUID.randomUUID().toString().substring(0, 8);
+    public static String generatedCodeWithDate() {
+        String uuid = UUID.randomUUID().toString().substring(0, 6);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMddHHmmss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMddHHmm");
         String dateString = now.format(formatter);
         return uuid + dateString;
     }

@@ -1,4 +1,4 @@
-package com.know_wave.comma.comma_backend.arduino.controller;
+package com.know_wave.comma.comma_backend.arduino.controller.normal;
 
 import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketDeleteRequest;
 import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketRequest;

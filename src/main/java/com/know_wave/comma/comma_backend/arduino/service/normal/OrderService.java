@@ -1,27 +1,22 @@
 package com.know_wave.comma.comma_backend.arduino.service.normal;
 
 import com.know_wave.comma.comma_backend.account.entity.Account;
+import com.know_wave.comma.comma_backend.account.entity.auth.Authority;
 import com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService;
-import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketDeleteRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.basket.BasketResponse;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderCancelRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderDetailResponse;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderRequest;
-import com.know_wave.comma.comma_backend.arduino.dto.order.OrderResponse;
+import com.know_wave.comma.comma_backend.arduino.dto.order.*;
 import com.know_wave.comma.comma_backend.arduino.entity.*;
 import com.know_wave.comma.comma_backend.arduino.repository.BasketRepository;
 import com.know_wave.comma.comma_backend.arduino.repository.OrderInfoRepository;
-import com.know_wave.comma.comma_backend.exception.EntityAlreadyExistException;
-import com.know_wave.comma.comma_backend.util.GenerateCodeUtils;
+import com.know_wave.comma.comma_backend.util.GenerateUtils;
 import com.know_wave.comma.comma_backend.util.ValidateUtils;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.know_wave.comma.comma_backend.account.service.normal.AccountQueryService.getAuthenticatedId;
 import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSource.*;
@@ -31,12 +26,16 @@ import static com.know_wave.comma.comma_backend.util.message.ExceptionMessageSou
 public class OrderService {
 
     private final AccountQueryService accountQueryService;
+    private final OrderEmailService orderEmailService;
+    private final ArduinoService arduinoService;
     private final BasketService basketService;
     private final BasketRepository basketRepository;
     private final OrderInfoRepository orderInfoRepository;
 
-    public OrderService(AccountQueryService accountQueryService, BasketService basketService, BasketRepository basketRepository, OrderInfoRepository orderInfoRepository) {
+    public OrderService(AccountQueryService accountQueryService, OrderEmailService orderEmailService, ArduinoService arduinoService, BasketService basketService, BasketRepository basketRepository, OrderInfoRepository orderInfoRepository) {
         this.accountQueryService = accountQueryService;
+        this.orderEmailService = orderEmailService;
+        this.arduinoService = arduinoService;
         this.basketService = basketService;
         this.basketRepository = basketRepository;
         this.orderInfoRepository = orderInfoRepository;
@@ -45,63 +44,81 @@ public class OrderService {
     public void order(OrderRequest request) {
 
         Account account = accountQueryService.findAccount(getAuthenticatedId());
-        List<Basket> baskets = basketService.getBasketsFetchArduino(account);
+
+        if (account.dontHaveAuthority(Authority.MEMBER_EQUIPMENT_APPLY)) {
+            throw new AccessDeniedException(PERMISSION_DENIED);
+        }
+
+        List<Basket> baskets = basketService.getBasketsByAccount(account);
 
         if (Basket.isOverRequest(baskets) || Basket.isEmpty(baskets)) {
             throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
         }
 
-        String orderNumber = GenerateCodeUtils.getCodeWithDate();
+        String orderNumber = GenerateUtils.generatedCodeWithDate();
         OrderInfo orderInfo = new OrderInfo(account, orderNumber, request.getSubject(), request.getDescription());
 
-        List<Order> orders = Order.ofList(baskets, orderInfo);
+        Order.ofList(baskets, orderInfo);
 
         orderInfoRepository.save(orderInfo);
         basketRepository.deleteAll(baskets);
+
+        orderEmailService.sendOrderEmail(orderInfo);
+    }
+
+    public void moreOrder(String orderNumber, OrderMoreRequest request) {
+
+        Account account = accountQueryService.findAccount(getAuthenticatedId());
+
+        OrderInfo orderInfo = getOrderInfoById(orderNumber);
+
+        Arduino arduino = arduinoService.getArduino(request.getArduinoId());
+
+        if (orderInfo.isNotOrderer(account)) {
+            throw new BadCredentialsException(BAD_CREDENTIALS);
+        }
+
+        if (!orderInfo.getStatus().equals(OrderStatus.APPLIED)) {
+            String message = OrderStatus.GET_ORDER_STATUS_MSG(orderInfo.getStatus());
+            throw new IllegalArgumentException(message + " (주문번호 : " + orderNumber + ")");
+        }
+
+        if (account.dontHaveAuthority(Authority.MEMBER_EQUIPMENT_APPLY)) {
+            throw new AccessDeniedException(PERMISSION_DENIED);
+        }
+
+        if (arduino.isNotEnoughCount(request.getOrderCount())) {
+            throw new IllegalArgumentException(NOT_ACCEPTABLE_REQUEST);
+        }
+
+        Order.of(orderInfo, arduino, request.getOrderCount());
     }
 
     public List<OrderResponse> getOrders() {
 
         final String accountId = getAuthenticatedId();
         Account account = accountQueryService.findAccount(accountId);
-        List<OrderInfo> orderInfos = getOrderInfos(account);
+        List<OrderInfo> orderInfos = getOrderInfosByAccount(account);
 
         return OrderResponse.ofList(orderInfos);
     }
 
     public OrderDetailResponse getOrderDetail(String orderNumber) {
 
-        final String accountId = getAuthenticatedId();
-        Account account = accountQueryService.findAccount(accountId);
-        OrderInfo orderInfo = getOrderInfo(orderNumber);
+        Account account = accountQueryService.findAccount(getAuthenticatedId());
+        OrderInfo orderInfo = getOrderInfoById(orderNumber);
 
         if (orderInfo.isNotOrderer(account)) {
             throw new BadCredentialsException(BAD_CREDENTIALS);
         }
 
-        var orderArduinoList = new ArrayList<OrderDetailResponse.Arduino>();
+        // 아누이노 목록과 연관된 카테고리 목록을 미리 가져오고 그룹화 (아두이노 1: 카테고리 N, N+1 문제 방지)
+        List<ArduinoCategory> arduinoCategories = arduinoService.getArduinoCategoreisByArduinos(
+                                                            orderInfo.getOrders().stream().map(Order::getArduino).toList());
 
-        OrderDetailResponse result = new OrderDetailResponse(
-                accountId,
-                orderInfo.getDescription(),
-                orderInfo.getCreatedDate(),
-                orderInfo.getStatus().getValue(),
-                orderInfo.getOrderNumber(),
-                orderInfo.getSubject(),
-                orderInfo.getCancellationReason(),
-                orderArduinoList
-        );
+        Map<Arduino, List<ArduinoCategory>> arduinoCategoryMap = ArduinoCategory.groupingByArduino(arduinoCategories);
 
-        orderInfo.getOrders().forEach(order ->
-                orderArduinoList.add(
-                        new OrderDetailResponse.Arduino(order.getArduino().getId(),
-                                order.getArduino().getName(),
-                                order.getCount(),
-                                order.getArduino().getCategories())
-                )
-        );
-
-        return result;
+        return OrderDetailResponse.of(orderInfo, arduinoCategoryMap);
     }
 
     public void cancelOrderRequest(String orderNumber, OrderCancelRequest request) {
@@ -115,8 +132,8 @@ public class OrderService {
                 }
 
                 if (!orderInfo.isCancellable()) {
-                    String message = NOT_ACCEPTABLE_ORDER_STATUS(orderInfo.getStatus());
-                    throw new IllegalArgumentException(message);
+                    String message = OrderStatus.GET_ORDER_STATUS_MSG(orderInfo.getStatus());
+                    throw new IllegalArgumentException(message + " (주문번호 : " + orderNumber + ")");
                 }
 
                 orderInfo.setStatus(OrderStatus.CANCELLATION_REQUEST);
@@ -128,12 +145,12 @@ public class OrderService {
         );
     }
 
-    private OrderInfo getOrderInfo(String orderNumber) {
+    public OrderInfo getOrderInfoById(String orderNumber) {
         return orderInfoRepository.findFetchById(orderNumber)
                 .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_VALUE));
     }
 
-    private List<OrderInfo> getOrderInfos(Account account) {
+    public List<OrderInfo> getOrderInfosByAccount(Account account) {
         List<OrderInfo> orderInfos = orderInfoRepository.findAllByAccount(account);
 
         ValidateUtils.throwIfEmpty(orderInfos);

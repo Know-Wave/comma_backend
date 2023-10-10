@@ -1,15 +1,17 @@
 package com.know_wave.comma.comma_backend.arduino.dto.order;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class OrderResponseGroup {
 
-    List<OrderResponse> userOrderList;
-
     public static List<OrderResponseGroup> ofList(Map<String, List<OrderResponse>> groupedOrderResponses) {
-        return  groupedOrderResponses.values().stream()
-                .map(OrderResponseGroup::of)
+        return  groupedOrderResponses.keySet().stream()
+                .map(key -> {
+                    List<OrderResponse> orderResponses = groupedOrderResponses.get(key);
+                    return OrderResponseGroup.of(orderResponses);
+                })
                 .toList();
     }
 
@@ -17,9 +19,11 @@ public class OrderResponseGroup {
         return new OrderResponseGroup(userOrderList);
     }
 
-    public OrderResponseGroup(List<OrderResponse> userOrderList) {
+    private OrderResponseGroup(List<OrderResponse> userOrderList) {
         this.userOrderList = userOrderList;
     }
+
+    List<OrderResponse> userOrderList;
 
     public List<OrderResponse> getUserOrderList() {
         return userOrderList;

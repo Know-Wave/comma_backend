@@ -13,14 +13,18 @@ public class Order{
 
     public static List<Order> ofList(List<Basket> baskets, OrderInfo orderInfo) {
         return baskets.stream()
-                .map(basket -> new Order(orderInfo, basket.getArduino(), basket.getArduinoCount()))
+                .map(basket -> new Order(orderInfo, basket.getArduino(), basket.getStoredArduinoCount()))
                 .toList();
     }
 
-    public Order(OrderInfo orderInfo, Arduino arduino, int count) {
+    public static Order of(OrderInfo orderInfo, Arduino arduino, int orderArduinoCount) {
+        return new Order(orderInfo, arduino, orderArduinoCount);
+    }
+
+    private Order(OrderInfo orderInfo, Arduino arduino, int orderArduinoCount) {
         setOrderInfo(orderInfo);
         this.arduino = arduino;
-        this.count = count;
+        this.orderArduinoCount = orderArduinoCount;
     }
 
     @Id
@@ -36,7 +40,7 @@ public class Order{
     @JoinColumn(name = "order_number")
     private OrderInfo orderInfo;
 
-    private int count;
+    private int orderArduinoCount;
 
     public void setOrderInfo(OrderInfo orderInfo) {
         this.orderInfo = orderInfo;
@@ -55,8 +59,8 @@ public class Order{
         return arduino;
     }
 
-    public int getCount() {
-        return count;
+    public int getOrderArduinoCount() {
+        return orderArduinoCount;
     }
 
 }

@@ -17,4 +17,10 @@ public interface ArduinoCategoryRepository extends CrudRepository<ArduinoCategor
             "where ac.arduino = :arduino")
     List<ArduinoCategory> findAllFetchByArduino(Arduino arduino);
 
+    @Query("select ac " +
+            "from ArduinoCategory ac " +
+            "join fetch ac.category " +
+            "join fetch ac.arduino " +
+            "where ac.arduino in :arduinos")
+    List<ArduinoCategory> findALlFetchByArduinos(List<Arduino> arduinos);
 }

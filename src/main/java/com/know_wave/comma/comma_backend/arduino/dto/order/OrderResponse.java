@@ -3,11 +3,22 @@ package com.know_wave.comma.comma_backend.arduino.dto.order;
 import com.know_wave.comma.comma_backend.arduino.entity.OrderInfo;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class OrderResponse {
+
+    public static List<List<OrderResponse>> ofGroupList(Map<String, List<OrderResponse>> groupedOrderResponses) {
+
+        List<List<OrderResponse>> result = new ArrayList<>();
+
+        groupedOrderResponses.keySet()
+                .forEach(key -> result.add(groupedOrderResponses.get(key)));
+
+        return result;
+    }
 
     public static List<OrderResponse> ofList(List<OrderInfo> orderInfoList) {
         return orderInfoList.stream()
@@ -16,11 +27,12 @@ public class OrderResponse {
     }
 
     public static OrderResponse of(OrderInfo orderInfo) {
-        return new OrderResponse(orderInfo.getAccount().getId(),
-                orderInfo.getDescription(),
+        return new OrderResponse(
+                orderInfo.getAccount().getId(),
+                orderInfo.getOrderNumber(),
                 orderInfo.getStatus().getValue(),
                 orderInfo.getCreatedDate(),
-                orderInfo.getOrderNumber(),
+                orderInfo.getDescription(),
                 orderInfo.getSubject(),
                 orderInfo.getCancellationReason());
     }
@@ -30,7 +42,11 @@ public class OrderResponse {
                 .collect(Collectors.groupingBy(OrderResponse::getAccountId));
     }
 
-    public OrderResponse(String accountId, String orderCode, String orderStatus, LocalDateTime orderDate, String orderDescription, String subject, String cancelReason) {
+    public static Map<String, List<OrderResponse>> groupingOrderByOrderCode(List<OrderResponse> orderResponses) {
+        return orderResponses.stream().
+                collect(Collectors.groupingBy(OrderResponse::getOrderCode));
+    }
+    private OrderResponse(String accountId, String orderCode, String orderStatus, LocalDateTime orderDate, String orderDescription, String subject, String cancelReason) {
         this.accountId = accountId;
         this.orderCode = orderCode;
         this.orderStatus = orderStatus;
@@ -39,13 +55,13 @@ public class OrderResponse {
         this.subject = subject;
         this.cancelReason = cancelReason;
     }
-
     private final String accountId;
     private final String orderCode;
     private final String orderStatus;
     private final LocalDateTime orderDate;
     private final String orderDescription;
     private final String subject;
+
     private final String cancelReason;
 
     public String getCancelReason() {
